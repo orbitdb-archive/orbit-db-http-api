@@ -73,7 +73,9 @@ try {
             throw new Error('Unrecognised ipfs type');
     }
     api_port = args['--api-port'] || process.env.API_PORT || 3000
-    orbitdb_api.listen(api_port)
+    orbitdb_api.listen(api_port, () => {
+        console.log(`Server running on port ${api_port}`);
+    });
 
 } catch(err) {
     console.error(err);

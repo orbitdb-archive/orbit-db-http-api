@@ -41,12 +41,6 @@ class OrbitdbAPI extends Express {
             }
             return res.status(500).json('ERROR')
         });
-
-        this.listen = (api_port) => {
-            super.listen(api_port, () => {
-                console.log(`Server running on port ${api_port}`);
-            });
-        }
     }
 }
 
