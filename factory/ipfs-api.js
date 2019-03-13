@@ -4,7 +4,7 @@ const OrbitApi    = require('lib/orbitdb-api.js')
 
 function api_factory() {
     var ipfs_host = process.env.IPFS_HOST
-    var ipfs_port = process.env.IPFS_PORT
+    var ipfs_port = process.env.IPFS_PORT || 5001
 
     try {
         _ipfs = IpfsApi(ipfs_host, ipfs_port)
