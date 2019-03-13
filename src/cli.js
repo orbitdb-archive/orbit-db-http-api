@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const {docopt} = require('docopt');
-const version = require('./package.json').version;
+const version = require('../package.json').version;
 
 
 class Cli {
