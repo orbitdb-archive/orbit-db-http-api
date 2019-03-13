@@ -49,7 +49,7 @@ try {
 
     switch(true){
         case args['local']:
-            const api_factory_local = require('factory/ipfs-local.js');
+            const api_factory_local = require('./factory/ipfs-local.js');
             let ipfs_conf, ipfs_opts;
             ipfs_conf = args['--ipfs-conf'] || process.env.IPFS_CONF
             if (ipfs_conf) {
@@ -62,7 +62,7 @@ try {
             break;
 
         case args['api']:
-            const api_factory_remote = require('factory/ipfs-api.js');
+            const api_factory_remote = require('./factory/ipfs-api.js');
             ipfs_host = args['--ipfs-host'] || process.env.IPFS_HOST;
             if (!ipfs_host) throw new Error ('Missing IPFS_HOST');
             ipfs_port = args['--ipfs-port'] || process.env.IPFS_PORT || 5001;

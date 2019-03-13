@@ -1,7 +1,7 @@
 const IpfsApi   = require('ipfs-api');
 const OrbitDB   = require('orbit-db');
-const DBManager = require('./db-manager.js')
-const OrbitApi  = require('lib/orbitdb-api.js')
+const DBManager = require('../lib/db-manager.js')
+const OrbitApi  = require('../lib/orbitdb-api.js')
 
 
 function api_factory(ipfs_host, ipfs_port, orbitdb_dir, orbitdb_opts) {
