@@ -10,10 +10,10 @@ function api_factory(ipfs_host, ipfs_port, orbitdb_dir, orbitdb_opts) {
     let dbm
     let orbitdb_api
 
-    ipfs        = IpfsApi(ipfs_host, ipfs_port)
-    orbitdb     = OrbitDB(ipfs, orbitdb_dir, orbitdb_opts)
-    dbm         = DBManager(orbitdb)
-    orbitdb_api = OrbitApi(dbm)
+    ipfs        = new IpfsApi(ipfs_host, ipfs_port)
+    orbitdb     = new OrbitDB(ipfs, orbitdb_dir, orbitdb_opts)
+    dbm         = new DBManager(orbitdb)
+    orbitdb_api = new OrbitApi(dbm)
 
     return orbitdb_api
 }
