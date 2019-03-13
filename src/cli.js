@@ -51,6 +51,7 @@ try {
         case args['local']:
             const api_factory_local = require('./factory/ipfs-local.js');
             let ipfs_conf, ipfs_opts;
+            ipfs_opts = {}
             ipfs_conf = args['--ipfs-conf'] || process.env.IPFS_CONF
             if (ipfs_conf) {
                 fs.readFile(ipfs_conf, 'utf8', function (err, data) {
