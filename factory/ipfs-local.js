@@ -1,5 +1,5 @@
 const Ipfs      = require('ipfs');
-const OrbitApi  = require('./orbitdbapi.js')
+const OrbitApi  = require('lib/orbitdb-api.js')
 
 
 function api_factory() {
