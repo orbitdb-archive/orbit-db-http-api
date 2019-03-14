@@ -37,10 +37,10 @@ class OrbitdbAPI extends Express {
         }));
 
         this.post('/db/:dbname/put',  asyncMiddleware( async (req, res, next) => {
-            let db
+            let db, result
             db = await dbm.get(req.params.dbname)
             result = await db.put(req.body)
-            return res.json('OK')
+            return res.json({status: 'OK', 'result': result})
         }));
 
         this.post('/db/:dbname', asyncMiddleware( async (req, res, next) => {
