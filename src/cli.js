@@ -59,7 +59,8 @@ try {
                     ipfs_opts = JSON.parse(data);
                 });
             }
-            orbitdb_api = api_factory_local(ipfs_opts, orbitdb_dir, orbitdb_opts);
+            Promise.resolve(api_factory_local(ipfs_opts, orbitdb_dir, orbitdb_opts))
+                .then((val) => { orbitdb_api = val});
             break;
 
         case args['api']:
@@ -67,7 +68,8 @@ try {
             ipfs_host = args['--ipfs-host'] || process.env.IPFS_HOST;
             if (!ipfs_host) throw new Error ('Missing IPFS_HOST');
             ipfs_port = args['--ipfs-port'] || process.env.IPFS_PORT || 5001;
-            orbitdb_api = api_factory_remote(ipfs_host, ipfs_port, orbitdb_dir, orbitdb_opts);
+            Promise.resolve(api_factory_remote(ipfs_host, ipfs_port, orbitdb_dir, orbitdb_opts))
+                .then((val) => { orbitdb_api = val});
             break;
 
         default:
