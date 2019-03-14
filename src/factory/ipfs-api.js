@@ -1,4 +1,4 @@
-const IpfsApi   = require('ipfs-api');
+const IpfsApi   = require('ipfs-http-client');
 const OrbitDB   = require('orbit-db');
 const DBManager = require('../lib/db-manager.js')
 const OrbitApi  = require('../lib/orbitdb-api.js')

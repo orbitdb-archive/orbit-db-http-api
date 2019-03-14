@@ -19,7 +19,7 @@
       "docopt": "^0.6.2",
       "express": "^4.16.4",
       "ipfs": "^0.34.4",
-      "ipfs-api": "^26.1.2",
+      "ipfs-http-client": "^30.0.0",
       "orbit-db": "^0.19.9"
     }
   }
