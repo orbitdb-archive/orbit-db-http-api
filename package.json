@@ -13,7 +13,7 @@
       "url": "hhttps://github.com/phillmac/orbit-db-api"
     },
     "engines": {
-      "node": ">=8.0.0"
+      "node": ">=10.0.0"
     },
     "dependencies": {
       "docopt": "^0.6.2",
