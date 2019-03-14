@@ -29,10 +29,10 @@ class OrbitdbAPI extends Express {
             }
         });
 
-        this.get('/db/:dbname/get/:index',  asyncMiddleware( async (req, res, next) => {
+        this.get('/db/:dbname/get/:item',  asyncMiddleware( async (req, res, next) => {
             let db, contents
             db = await dbm.get(req.params.dbname)
-            contents = await db.get(req.params.index)
+            contents = await db.get(req.params.item)
             return res.json(contents)
         }));
 
@@ -54,6 +54,13 @@ class OrbitdbAPI extends Express {
             let db
             db = await dbm.get(req.params.dbname, req.body)
             return res.json(dbm.db_info(db.dbname));
+        }));
+
+        this.delete('/db/:dbname/:item', asyncMiddleware( async (req, res, next) => {
+            let db, hash
+            db = await dbm.get(req.params.dbname)
+            hash = await db.del(req.params.item)
+            return res.json(hash)
         }));
 
         this.use(function (err, req, res, next) {
