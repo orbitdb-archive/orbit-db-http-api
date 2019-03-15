@@ -87,7 +87,8 @@ class OrbitdbAPI extends Express {
             '<': (a, b) => a < b ,
             '>=': (a, b) => a >= b,
             '<=': (a, b) => a <= b,
-            '%': (a, b, c) => a % b == c
+            '%': (a, b, c) => a % b == c,
+            '*': () => true
         };
 
         this.get('/db/:dbname/query',  asyncMiddleware( async (req, res, next) => {
