@@ -92,7 +92,7 @@ class OrbitdbAPI extends Express {
         };
 
         this.get('/db/:dbname/query',  asyncMiddleware( async (req, res, next) => {
-                let db, qparams, query, result;
+                let db, qparams, comparator, query, result;
                 db = await dbm.get(req.params.dbname);
                 qparams = req.body;
                 comparator = comparisons[qparams.comparator]
