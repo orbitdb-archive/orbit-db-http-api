@@ -36,33 +36,45 @@ class OrbitdbAPI extends Express {
             return res.json(contents)
         }));
 
-        this.all('/db/:dbname/put',  asyncMiddleware( async (req, res, next) => {
+        var db_put = asyncMiddleware( async (req, res, next) => {
             let db, hash
             db = await dbm.get(req.params.dbname)
             hash = await db.put(req.body)
             return res.json(hash)
-        }));
+        });
 
-        this.all('/db/:dbname/add',  asyncMiddleware( async (req, res, next) => {
+        this.post('/db/:dbname/put', db_put);
+        this.put('/db/:dbname/put', db_put);
+
+        var db_add = asyncMiddleware( async (req, res, next) => {
             let db, hash
             db = await dbm.get(req.params.dbname)
             hash = await db.add(req.body)
             return res.json(hash)
-        }));
+        });
 
-        this.all('/db/:dbname/inc',  asyncMiddleware( async (req, res, next) => {
+        this.post('/db/:dbname/add', db_add);
+        this.put('/db/:dbname/add', db_add);
+
+        var db_inc = asyncMiddleware( async (req, res, next) => {
             let db, hash
             db = await dbm.get(req.params.dbname)
             hash = await db.inc(req.body.val)
             return res.json(hash)
-        }));
+        });
 
-        this.all('/db/:dbname/inc/:val',  asyncMiddleware( async (req, res, next) => {
+        this.post('/db/:dbname/inc', db_inc);
+        this.put('/db/:dbname/inc', db_inc);
+
+        var db_inc_val =  asyncMiddleware( async (req, res, next) => {
             let db, hash
             db = await dbm.get(req.params.dbname)
             hash = await db.inc(req.params.val)
             return res.json(hash)
-        }));
+        });
+
+        this.post('/db/:dbname/inc/:val', db_inc_val);
+        this.put('/db/:dbname/inc/:val', db_inc_val);
 
         this.post('/db/:dbname', asyncMiddleware( async (req, res, next) => {
             let db
@@ -92,7 +104,7 @@ class OrbitdbAPI extends Express {
         '%': (a, b, c) => a % b == c
     };
 
-    this.all('/db/:dbname/query',  asyncMiddleware( async (req, res, next) => {
+    this.get('/db/:dbname/query',  asyncMiddleware( async (req, res, next) => {
             let db, qparams, query, result;
             db = await dbm.get(req.params.dbname);
             qparams = req.body;
