@@ -60,6 +60,27 @@ curl http://localhost:3000/db/test
 ```json
 {"address":{"root":"zdpuAxyAVXKV5Wn6KGZysfJMkxhDKYU9aziviWqFS4AJWaMi6","path":"test"},"dbname":"test","id":"/orbitdb/zdpuAxyAVXKV5Wn6KGZysfJMkxhDKYU9aziviWqFS4AJWaMi6/test","options":{"create":true,"localOnly":false,"maxHistory":-1,"overwrite":true,"replicate":true},"type":"feed"}
 ```
+### POST /db/:dbname
+Opens an existing database or creates a new database with name :dbname
+
+To open a pre-existing database :dbname should be a url-encoded orbit-db address.
+
+```shell
+curl http://localhost:3000/db/%2Forbitdb%2FzdpuAxyAVXKV5Wn6KGZysfJMkxhDKYU9aziviWqFS4AJWaMi6%2Ftest
+```
+
+To create a fresh database, :dbname should be the intended name of the new database.
+The body of the request should contain the perameters for the new database.
+See https://github.com/orbitdb/orbit-db/blob/master/API.md#orbitdbcreatename-type-options for full details 
+
+```shell
+curl http://localhost:3000/db/test --data create=true --data type=feed
+```
+
+
+``json
+{"address":{"root":"zdpuAxyAVXKV5Wn6KGZysfJMkxhDKYU9aziviWqFS4AJWaMi6","path":"test"},"dbname":"test","id":"/orbitdb/zdpuAxyAVXKV5Wn6KGZysfJMkxhDKYU9aziviWqFS4AJWaMi6/test","options":{"create":true,"localOnly":false,"maxHistory":-1,"overwrite":true,"replicate":true},"type":"feed"}
+```
 
 ### GET /db/:dbname/get/:item
 
