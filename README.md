@@ -75,7 +75,7 @@ curl  -X POST http://localhost:3000/db/%2Forbitdb%2FzdpuAxyAVXKV5Wn6KGZysfJMkxhD
 ```
 
 To create a fresh database, :dbname should be the intended name of the new database.
-The body of the request should contain the perameters for the new database.
+The body of the request should contain the parameters for the new database.
 See https://github.com/orbitdb/orbit-db/blob/master/API.md#orbitdbcreatename-type-options for full details 
 
 ```shell
