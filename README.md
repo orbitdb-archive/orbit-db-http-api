@@ -29,7 +29,7 @@ In api mode, OrbitDB HTTP Client will connect to an existing IPFS node to
 replicate the OrbitDB peer:
 
 ```shell
-node src/cli.js local --orbitdb-dir /path/to/orbitdb
+node src/cli.js api --ipfs-host ipfs_host --orbitdb-dir /path/to/orbitdb
 ```
 
 where --ipfs-host is an external IPFS node and --orbitdb-dir is the path to
