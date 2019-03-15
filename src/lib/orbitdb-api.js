@@ -29,13 +29,6 @@ class OrbitdbAPI extends Express {
             }
         });
 
-        this.get('/db/:dbname/:item',  asyncMiddleware( async (req, res, next) => {
-            let db, contents
-            db = await dbm.get(req.params.dbname)
-            contents = await db.get(req.params.item)
-            return res.json(contents)
-        }));
-
         var db_put = asyncMiddleware( async (req, res, next) => {
             let db, hash
             db = await dbm.get(req.params.dbname)
@@ -88,6 +81,25 @@ class OrbitdbAPI extends Express {
             return res.json(dbm.db_info(db.dbname));
         }));
 
+        var comparisons = {
+            '==': (a, b) => a == b ,
+            '>': (a, b) => a > b ,
+            '<': (a, b) => a < b ,
+            '>=': (a, b) => a >= b,
+            '<=': (a, b) => a <= b,
+            '%': (a, b, c) => a % b == c
+        };
+
+        this.get('/db/:dbname/query',  asyncMiddleware( async (req, res, next) => {
+                let db, qparams, query, result;
+                db = await dbm.get(req.params.dbname);
+                qparams = req.body;
+                comparator = comparisons[qparams.comparator]
+                query = (doc) => comparator(doc[qparams.propname], ...qparams.values)
+                result = await db.query(query)
+                return res.json(result)
+            }));
+
         this.delete('/db/:dbname/:item', asyncMiddleware( async (req, res, next) => {
             let db, hash
             db = await dbm.get(req.params.dbname)
@@ -95,25 +107,12 @@ class OrbitdbAPI extends Express {
             return res.json(hash)
         }));
 
-    var comparisons = {
-        '==': (a, b) => a == b ,
-        '>': (a, b) => a > b ,
-        '<': (a, b) => a < b ,
-        '>=': (a, b) => a >= b,
-        '<=': (a, b) => a <= b,
-        '%': (a, b, c) => a % b == c
-    };
-
-    this.get('/db/:dbname/query',  asyncMiddleware( async (req, res, next) => {
-            let db, qparams, query, result;
-            db = await dbm.get(req.params.dbname);
-            qparams = req.body;
-            comparator = comparisons[qparams.comparator]
-            query = (doc) => comparator(doc[qparams.propname], ...qparams.values)
-            result = await db.query(query)
-            return res.json(result)
+        this.get('/db/:dbname/:item',  asyncMiddleware( async (req, res, next) => {
+            let db, contents
+            db = await dbm.get(req.params.dbname)
+            contents = await db.get(req.params.item)
+            return res.json(contents)
         }));
-
 
         this.use(function (err, req, res, next) {
             console.error(err)
