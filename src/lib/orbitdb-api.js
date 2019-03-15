@@ -44,7 +44,13 @@ class OrbitdbAPI extends Express {
         this.delete('/db/:dbname/:item', asyncMiddleware( async (req, res, next) => {
             let db, hash
             db = await dbm.get(req.params.dbname)
-            hash = await db.del(req.params.item)
+            if (db.del) {
+                hash = await db.del(req.params.item)
+            } else if (db.remove) {
+                hash = await db.remove(req.params.item)
+            } else {
+                throw new Error(`DB type ${db.type} does not support removing data`)
+            }
             return res.json(hash)
         }));
 
