@@ -98,7 +98,9 @@ class OrbitdbAPI extends Express {
                 comparison = comparisons[qparams.comp || '*']
                 console.log(comparison)
                 query = (doc) => comparison(doc[qparams.propname], ...qparams.values)
+                console.log(query)
                 result = await db.query(query)
+                console.log(result)
                 return res.json(result)
             }));
 
