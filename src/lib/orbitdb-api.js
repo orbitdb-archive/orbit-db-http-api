@@ -36,23 +36,43 @@ class OrbitdbAPI extends Express {
             return res.json(contents)
         }));
 
-        this.post('/db/:dbname/put',  asyncMiddleware( async (req, res, next) => {
+        this.all('/db/:dbname/put',  asyncMiddleware( async (req, res, next) => {
             let db, hash
             db = await dbm.get(req.params.dbname)
             hash = await db.put(req.body)
             return res.json(hash)
         }));
 
-        this.post('/db/:dbname/add',  asyncMiddleware( async (req, res, next) => {
+        this.all('/db/:dbname/add',  asyncMiddleware( async (req, res, next) => {
             let db, hash
             db = await dbm.get(req.params.dbname)
             hash = await db.add(req.body)
             return res.json(hash)
         }));
 
+        this.all('/db/:dbname/inc',  asyncMiddleware( async (req, res, next) => {
+            let db, hash
+            db = await dbm.get(req.params.dbname)
+            hash = await db.inc(req.body.val)
+            return res.json(hash)
+        }));
+
+        this.all('/db/:dbname/inc/:val',  asyncMiddleware( async (req, res, next) => {
+            let db, hash
+            db = await dbm.get(req.params.dbname)
+            hash = await db.inc(req.params.val)
+            return res.json(hash)
+        }));
+
         this.post('/db/:dbname', asyncMiddleware( async (req, res, next) => {
             let db
             db = await dbm.get(req.params.dbname, req.body)
+            return res.json(dbm.db_info(db.dbname));
+        }));
+
+        this.post('/db', asyncMiddleware( async (req, res, next) => {
+            let db
+            db = await dbm.get(req.body.dbname, req.body)
             return res.json(dbm.db_info(db.dbname));
         }));
 
