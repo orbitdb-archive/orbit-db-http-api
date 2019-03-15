@@ -27,6 +27,12 @@ class OrbitdbAPI extends Express {
             return res.json(dbm.db_info(db.dbname));
         }));
 
+        this.post('/db/:dbname', asyncMiddleware( async (req, res, next) => {
+            let db
+            db = await dbm.get(req.params.dbname, req.body)
+            return res.json(dbm.db_info(db.dbname));
+        }));
+
         this.get('/db/:dbname', (req, res, next) => {
             try {
                 return res.json(dbm.db_info(req.params.dbname));
@@ -88,12 +94,6 @@ class OrbitdbAPI extends Express {
 
         this.post('/db/:dbname/inc/:val', db_inc_val);
         this.put('/db/:dbname/inc/:val', db_inc_val);
-
-        this.post('/db/:dbname', asyncMiddleware( async (req, res, next) => {
-            let db
-            db = await dbm.get(req.params.dbname, req.body)
-            return res.json(dbm.db_info(db.dbname));
-        }));
 
         var comparisons = {
             '==': (a, b) => a == b ,
