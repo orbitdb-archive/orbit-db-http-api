@@ -83,6 +83,26 @@ class OrbitdbAPI extends Express {
             return res.json(hash)
         }));
 
+    var comparisons = {
+        '==': (a, b) => a == b ,
+        '>': (a, b) => a > b ,
+        '<': (a, b) => a < b ,
+        '>=': (a, b) => a >= b,
+        '<=': (a, b) => a <= b,
+        '%': (a, b, c) => a % b == c
+    };
+
+    this.all('/db/:dbname/query',  asyncMiddleware( async (req, res, next) => {
+            let db, qparams, query, result;
+            db = await dbm.get(req.params.dbname);
+            qparams = req.body;
+            comparator = comparisons[qparams.comparator]
+            query = (doc) => comparator(doc[qparams.propname], ...qparams.values)
+            result = await db.query(query)
+            return res.json(result)
+        }));
+
+
         this.use(function (err, req, res, next) {
             console.error(err)
             if (res.headersSent) {
