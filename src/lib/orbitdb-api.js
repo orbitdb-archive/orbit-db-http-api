@@ -116,7 +116,7 @@ class OrbitdbAPI extends Express {
                 db = await dbm.get(req.params.dbname);
                 qparams = req.body;
                 comparison = comparisons[qparams.comp || '*']
-                query = (doc) => comparison(doc[qparams.propname], ...qparams.values)
+                query = (doc) => comparison(doc[qparams.propname || '_id'], ...qparams.values)
                 result = await db.query(query)
                 return res.json(result)
         }));
