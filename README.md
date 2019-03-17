@@ -94,7 +94,7 @@ Available operators are:
 
 ==
 
->
+\>
 
 <
 
@@ -104,7 +104,7 @@ Available operators are:
 
 %
 
-*
+\*
 
 ### GET /db/:dbname/:item
 
