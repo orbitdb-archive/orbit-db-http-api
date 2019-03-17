@@ -1,5 +1,7 @@
 # OrbitDB HTTP API Server
 
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/orbitdb/Lobby)
+
 > A HTTP API Server for the OrbitDB distributed peer-to-peer database.
 
 ## Install
@@ -171,7 +173,7 @@ curl -X GET http://localhost:3000/db/feed/iterator -d 'limit=-1'
 [{"OrbitDB":"https://github.com/orbitdb/orbit-db"},{"IPFS":"https://ipfs.io"}]
 ```
 
-See [OrbitDB's Iterator API|(https://github.com/orbitdb/orbit-db/blob/master/API.md#iteratoroptions-1)]
+See [OrbitDB's Iterator API](https://github.com/orbitdb/orbit-db/blob/master/API.md#iteratoroptions-1)
 for more information.
 
 ### POST|PUT /db/:dbname/add
