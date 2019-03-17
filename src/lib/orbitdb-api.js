@@ -54,13 +54,6 @@ class OrbitdbAPI extends Express {
             return res.json(hash)
         }));
 
-        this.get('/db/:dbname/:item',  asyncMiddleware( async (req, res, next) => {
-            let db, contents
-            db = await dbm.get(req.params.dbname)
-            contents = await db.get(req.params.item)
-            return res.json(contents)
-        }));
-
         var db_put = asyncMiddleware( async (req, res, next) => {
             let db, hash
             db = await dbm.get(req.params.dbname)
@@ -128,6 +121,12 @@ class OrbitdbAPI extends Express {
             return res.json(result)
         }));
 
+        this.get('/db/:dbname/:item',  asyncMiddleware( async (req, res, next) => {
+            let db, contents
+            db = await dbm.get(req.params.dbname)
+            contents = await db.get(req.params.item)
+            return res.json(contents)
+        }));
 
         this.use(function (err, req, res, next) {
             console.error(err)
