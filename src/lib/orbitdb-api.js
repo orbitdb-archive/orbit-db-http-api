@@ -105,27 +105,27 @@ class OrbitdbAPI extends Express {
         };
 
         this.get('/db/:dbname/query',  asyncMiddleware( async (req, res, next) => {
-                let db, qparams, comparison, query, result;
-                db = await dbm.get(req.params.dbname);
-                qparams = req.body;
-                comparison = comparisons[qparams.comp || '*']
-                query = (doc) => comparison(doc[qparams.propname || '_id'], ...qparams.values)
-                result = await db.query(query)
-                return res.json(result)
+            let db, qparams, comparison, query, result;
+            db = await dbm.get(req.params.dbname);
+            qparams = req.body;
+            comparison = comparisons[qparams.comp || '*']
+            query = (doc) => comparison(doc[qparams.propname || '_id'], ...qparams.values)
+            result = await db.query(query)
+            return res.json(result)
         }));
 
         this.get('/db/:dbname/iterator',  asyncMiddleware( async (req, res, next) => {
             let db, result;
             db = await dbm.get(req.params.dbname);
-            result =  db.iterator(req.body).collect().map((e) => e.payload.value)
+            result = db.iterator(req.body).collect().map((e) => e.payload.value)
             return res.json(result)
         }));
 
         this.get('/db/:dbname/:item',  asyncMiddleware( async (req, res, next) => {
             let db, contents
             db = await dbm.get(req.params.dbname)
-            contents = await db.get(req.params.item)
-            return res.json(contents)
+            result = await db.get(req.params.item).map((e) => e.payload ? e.payload.value: e)
+            return res.json(result)
         }));
 
         this.use(function (err, req, res, next) {
