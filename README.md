@@ -1,6 +1,6 @@
-# OrbitDB HTTP Client
+# OrbitDB HTTP API Server
 
-> An HTTP Client for the OrbitDB distributed peer-to-peer database.
+> A HTTP API Server for the OrbitDB distributed peer-to-peer database.
 
 ## Install
 
