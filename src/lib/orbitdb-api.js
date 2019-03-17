@@ -122,7 +122,7 @@ class OrbitdbAPI extends Express {
         }));
 
         this.get('/db/:dbname/:item',  asyncMiddleware( async (req, res, next) => {
-            let db, contents
+            let db, result
             db = await dbm.get(req.params.dbname)
             result = await db.get(req.params.item).map((e) => e.payload ? e.payload.value: e)
             return res.json(result)
