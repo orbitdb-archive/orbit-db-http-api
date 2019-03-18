@@ -147,6 +147,8 @@ class OrbitdbAPI extends Express {
             contents = await getraw(req,res, next)
             if (contents.map && contents.payload) {
                 result = contents.map((e) => e.payload.value)
+            } else if (contents.payload) {
+                result = contents.payload.value
             } else {
                 result = contents
             }
