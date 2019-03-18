@@ -102,6 +102,7 @@ class OrbitdbAPI extends Express {
             'gte': (a, b) => a >= b,
             'lte': (a, b) => a <= b,
             'mod': (a, b, c) => a % b == c,
+            'range': (a, b, c) => min(b,c) >= a && a <= max(b,c),
             'all': () => true
         };
 
