@@ -95,14 +95,14 @@ class OrbitdbAPI extends Express {
         this.put('/db/:dbname/inc/:val', db_inc_val);
 
         var comparisons = {
-            '!=': (a, b) => a != b,
-            '==': (a, b) => a == b,
-            '>': (a, b) => a > b ,
-            '<': (a, b) => a < b ,
-            '>=': (a, b) => a >= b,
-            '<=': (a, b) => a <= b,
-            '%': (a, b, c) => a % b == c,
-            '*': () => true
+            'ne': (a, b) => a != b,
+            'eq': (a, b) => a == b,
+            'gt': (a, b) => a > b,
+            'lt': (a, b) => a < b,
+            'gte': (a, b) => a >= b,
+            'lte': (a, b) => a <= b,
+            'mod': (a, b, c) => a % b == c,
+            'all': () => true
         };
 
         this.get('/db/:dbname/query',  asyncMiddleware( async (req, res, next) => {
