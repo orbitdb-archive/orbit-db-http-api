@@ -130,12 +130,24 @@ class OrbitdbAPI extends Express {
         this.get('/db/:dbname/rawiterator',  asyncMiddleware( async (req, res, next) => {
             return res.json(await rawiterator(req,res,next))}));
 
-        this.get('/db/:dbname/:item',  asyncMiddleware( async (req, res, next) => {
-            let db, result, contents
+        var getraw = async (req, res, next) => {
+            let db, contents
             db = await dbm.get(req.params.dbname)
             contents = await db.get(req.params.item)
-            if (contents.map) {
-                result = contents.map((e) => e.payload ? e.payload.value: e)
+            return contents
+        }
+
+        this.get('/db/:dbname/raw/:item',  asyncMiddleware( async (req, res, next) => {
+            let contents,
+            contents = await getraw(req, res, next)
+            return res.json(contents)
+        }));
+
+        this.get('/db/:dbname/:item',  asyncMiddleware( async (req, res, next) => {
+            let result, contents
+            contents = await getraw(req.params.item)
+            if (contents.map && contents.payload) {
+                result = contents.map((e) => e.payload.value)
             } else {
                 result = contents
             }
