@@ -95,7 +95,8 @@ class OrbitdbAPI extends Express {
         this.put('/db/:dbname/inc/:val', db_inc_val);
 
         var comparisons = {
-            '==': (a, b) => a == b ,
+            '!=': (a, b) => a != b,
+            '==': (a, b) => a == b,
             '>': (a, b) => a > b ,
             '<': (a, b) => a < b ,
             '>=': (a, b) => a >= b,
