@@ -77,7 +77,7 @@ class OrbitdbAPI extends Express {
         var db_inc = asyncMiddleware( async (req, res, next) => {
             let db, hash
             db = await dbm.get(req.params.dbname)
-            hash = await db.inc(req.body.val)
+            hash = await db.inc(parseInt(req.body.val))
             return res.json(hash)
         });
 
@@ -87,7 +87,7 @@ class OrbitdbAPI extends Express {
         var db_inc_val =  asyncMiddleware( async (req, res, next) => {
             let db, hash
             db = await dbm.get(req.params.dbname)
-            hash = await db.inc(req.params.val)
+            hash = await db.inc(parseInt(req.params.val))
             return res.json(hash)
         });
 
@@ -102,7 +102,7 @@ class OrbitdbAPI extends Express {
             'gte': (a, b) => a >= b,
             'lte': (a, b) => a <= b,
             'mod': (a, b, c) => a % b == c,
-            'range': (a, b, c) => min(b,c) >= a && a <= max(b,c),
+            'range': (a, b, c) => min(b,c) <= a && a >= max(b,c),
             'all': () => true
         };
 
