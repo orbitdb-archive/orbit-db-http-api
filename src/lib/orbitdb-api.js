@@ -144,7 +144,7 @@ class OrbitdbAPI extends Express {
 
         this.get('/db/:dbname/:item',  asyncMiddleware( async (req, res, next) => {
             let result, contents
-            contents = await getraw(req.params.item)
+            contents = await getraw(req,res, next)
             if (contents.map && contents.payload) {
                 result = contents.map((e) => e.payload.value)
             } else {
