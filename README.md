@@ -1,5 +1,7 @@
 # OrbitDB HTTP API Server
 
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/orbitdb/Lobby)
+
 > A HTTP API Server for the OrbitDB distributed peer-to-peer database.
 
 ## Install
@@ -63,6 +65,47 @@ curl http://localhost:3000/db/docstore
 {"address":{"root":"zdpuAmnfJZ6UTssG5Ns3o8ALXZJXVx5eTLTxf7gfFzHxurbJq","path":"docstore"},"dbname":"docstore","id":"/orbitdb/zdpuAmnfJZ6UTssG5Ns3o8ALXZJXVx5eTLTxf7gfFzHxurbJq/docstore","options":{"create":"true","indexBy":"_id","localOnly":false,"maxHistory":-1,"overwrite":true,"replicate":true},"type":"docstore"}
 ```
 
+### GET /db/:dbname/query
+
+Queries the database :dbname.
+
+Returns a list of found items as a JSON array.
+
+```shell
+curl http://localhost:3001/db/docstore/query -X GET -H "Content-Type: application/json" --data '{"values":[]}'
+```
+
+```json
+[{"project":"OrbitDB","site":"https://github.com/orbitdb/orbit-db","likes":200},{"project":"IPFS","site":"https://ipfs.io","likes":400}]
+```
+
+To query a subset of data, a condition can be specified. For example, to
+retrieve only those entries which have a total number of likes above 300:
+
+```shell
+curl http://localhost:3000/db/docstore/query -X GET -H "Content-Type: application/json" --data '{"propname":"likes","comp":">","values":[300]}'
+```
+
+```json
+[{"project":"IPFS","site":"https://ipfs.io","likes":400}]
+```
+
+Available operators are:
+
+==
+
+\>
+
+<
+
+\>=
+
+<=
+
+%
+
+\*
+
 ### GET /db/:dbname/:item
 
 Gets a record identified by :item from the database :dbname.
@@ -104,7 +147,36 @@ POST param (this would apply to type docstore only):
 curl http://localhost:3000/db/docstore -d "create=true" -d "type=docstore" -d "indexBy=name"
 ```
 
-## POST|PUT /db/:dbname/add
+### POST|PUT /db/:dbname/iterator
+
+Gets items from an eventlog or feed database :dbname.
+
+Returns a list of matching objects as a JSON array.
+
+Can be only used on eventlog|feed.
+
+```shell
+curl -X GET http://localhost:3000/db/feed/iterator
+```
+
+```json
+[{"IPFS":"https://ipfs.io"}]
+```
+
+Additional options can be passed to OrbitDB to return different entries.
+
+```shell
+curl -X GET http://localhost:3000/db/feed/iterator -d 'limit=-1'
+```
+
+```json
+[{"OrbitDB":"https://github.com/orbitdb/orbit-db"},{"IPFS":"https://ipfs.io"}]
+```
+
+See [OrbitDB's Iterator API](https://github.com/orbitdb/orbit-db/blob/master/API.md#iteratoroptions-1)
+for more information.
+
+### POST|PUT /db/:dbname/add
 
 Adds a new entry to the eventlog or feed database :dbname.
 
