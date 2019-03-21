@@ -11,6 +11,7 @@ async function api_factory(ipfs_opts, orbitdb_dir, orbitdb_opts) {
         EXPERIMENTAL: {
             pubsub: true
         },
+        start: true,
         config: {
                 Addresses: {
                 Swarm: [
@@ -22,7 +23,12 @@ async function api_factory(ipfs_opts, orbitdb_dir, orbitdb_opts) {
     }
 
     ipfs_opts   = Object.assign(ipfs_defaults, ipfs_opts)
-    ipfs        = new Ipfs(ipfs_opts)
+    ipfs        = await new Promise((resolve, reject) => {
+        var node = new Ipfs(ipfs_opts)
+        node.on("ready", () => {
+          resolve(node)
+        })
+      }).catch((ex) => raise (ex))
     orbitdb     = await OrbitDB.createInstance(ipfs, orbitdb_dir, orbitdb_opts)
     dbm         = new DBManager(orbitdb)
     orbitdb_api = new OrbitApi(dbm)
