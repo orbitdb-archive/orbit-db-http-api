@@ -65,6 +65,22 @@ curl http://localhost:3000/db/docstore
 {"address":{"root":"zdpuAmnfJZ6UTssG5Ns3o8ALXZJXVx5eTLTxf7gfFzHxurbJq","path":"docstore"},"dbname":"docstore","id":"/orbitdb/zdpuAmnfJZ6UTssG5Ns3o8ALXZJXVx5eTLTxf7gfFzHxurbJq/docstore","options":{"create":"true","indexBy":"_id","localOnly":false,"maxHistory":-1,"overwrite":true,"replicate":true},"type":"docstore"}
 ```
 
+### GET /db/:dbname/value
+
+Gets the current value from counter database :dbname.
+
+Returns the current counter value.
+
+Can only be used on counter.
+
+```shell
+curl -X GET http://localhost:3000/db/counter/value
+```
+
+```json
+1
+```
+
 ### GET /db/:dbname/query
 
 Queries the database :dbname.
@@ -72,7 +88,7 @@ Queries the database :dbname.
 Returns a list of found items as a JSON array.
 
 ```shell
-curl http://localhost:3001/db/docstore/query -X GET -H "Content-Type: application/json" --data '{"values":[]}'
+curl http://localhost:3000/db/docstore/query -X GET -H "Content-Type: application/json" --data '{"values":[]}'
 ```
 
 ```json
@@ -90,21 +106,50 @@ curl http://localhost:3000/db/docstore/query -X GET -H "Content-Type: applicatio
 [{"project":"IPFS","site":"https://ipfs.io","likes":400}]
 ```
 
-Available operators are:
+Available operator short-codes are:
 
-==
+```eq```    propname equals value. Equivalent to "=="
 
-\>
+```ne```    propname is not equals to value. Equivalent to "!="
 
-<
+```gt```    propname is greater than value. Equivalent to ">"
 
-\>=
+```lt```    propname is less than value. Equivalent to "<"
 
-<=
+```gte```   propname is greater than or equal to value. Equivalent to ">="
 
-%
+```lte```   propname is less than or equal to value. Equivalent to "<="
 
-\*
+```mod```   Perform a modulus calculation on propname using value. Equivalent to "%"
+
+```range``` Perform a range query, comparing propname to min and max.
+
+```all```   Fetch all records for field propname. Equivalent to "*"
+
+#### Modulus Query
+
+When using a modulus query, you must supply the divisor and the remainder. For example, to obtain all likes which are multiples of 100, you would specify a divisor 100 and a remainder 0:
+
+```shell
+curl -X GET http://localhost:3000/db/docstore/query -H "Content-Type:application/json" --data '{"propname":"likes", "comp":"mod", "values":[100,0]}'
+```
+
+```json
+[{"site":"https://ipfs.io","likes":400,"project":"IPFS"},{"site":"https://github.com/orbitdb/orbit-db","likes":200,"project":"OrbitDB"}]
+```
+
+#### Range Query
+
+When specifying a range query, you must supply the min and max
+values. For example, to obtain all likes greater than 250 but less than 1000 the min and max must be supplied:
+
+```shell
+curl -X GET http://localhost:3000/db/docstore/query -H "Content-Type:application/json" --data '{"propname":"likes", "comp":"range", "values":[250,1000]}'
+```
+
+```json
+[{"site":"https://ipfs.io","likes":400,"project":"IPFS"},{"site":"https://github.com/orbitdb/orbit-db","likes":200,"project":"OrbitDB"}]
+```
 
 ### GET /db/:dbname/:item
 
@@ -153,7 +198,7 @@ Gets items from an eventlog or feed database :dbname.
 
 Returns a list of matching objects as a JSON array.
 
-Can be only used on eventlog|feed.
+Can only be used on eventlog|feed.
 
 ```shell
 curl -X GET http://localhost:3000/db/feed/iterator
@@ -182,7 +227,7 @@ Adds a new entry to the eventlog or feed database :dbname.
 
 Returns the multihash of the new record entry.
 
-Can be only used on eventlog|feed
+Can only be used on eventlog|feed
 
 ```shell
 curl -X POST http://localhost:3000/db/feed/add -d 'feed-item-1'
@@ -204,6 +249,34 @@ curl -X POST http://localhost:3000/db/docstore/put -H "Content-Type: application
 
 ```json
 zdpuAkkFaimxyRE2bsiLRSiybkku3oDi4vFHqPZh29BABZtZU
+```
+
+### POST|PUT /db/:dbname/inc
+
+Increments the counter database :dbname by 1.
+
+Returns a multihash of the new counter value.
+
+```shell
+curl -X POST http://localhost:3000/db/counter/inc
+```
+
+```json
+zdpuAmHw9Tcc4pyVjcVX3rJNJ7SGffmu4EwjodzmaPBVGGzbd
+```
+
+### POST|PUT /db/:dbname/inc/:val
+
+Increments the counter database :dbname by :val.
+
+Returns a multihash of the new counter value.
+
+```shell
+curl -X POST http://localhost:3000/db/counter/inc/100
+```
+
+```json
+zdpuAmHw9Tcc4pyVjcVX3rJNJ7SGffmu4EwjodzmaPBVGGzbd
 ```
 
 ### DELETE /db/:dbname/:item
