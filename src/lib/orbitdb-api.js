@@ -9,9 +9,24 @@ const asyncMiddleware = fn =>
 class OrbitdbAPI extends Express {
     constructor (dbm) {
         super();
+        this.debug = false
 
         this.use(Express.urlencoded({extended: true }));
         this.use(Express.json());
+
+        var error_handler = (err, req, res, next) => {
+            if (err) {
+                console.error(err)
+                if (res.headersSent) {
+                    return next(err)
+                }
+                if (this.debug) return res.status(err.statusCode || 500).json(err);
+                return res.status(err.statusCode || 500).json('ERROR')
+            }
+            next()
+        }
+
+        this.use(error_handler);
 
         this.get('/dbs', (req, res, next) => {
             try {
@@ -162,14 +177,6 @@ class OrbitdbAPI extends Express {
             }
             return res.json(result)
         }));
-
-        this.use(function (err, req, res, next) {
-            console.error(err)
-            if (res.headersSent) {
-                return next(err)
-            }
-            return res.status(500).json('ERROR')
-        });
     }
 }
 
