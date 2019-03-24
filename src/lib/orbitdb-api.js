@@ -1,4 +1,5 @@
 const Express   = require('express');
+const JSON = require('json')
 
 const asyncMiddleware = fn =>
 (req, res, next) => {
@@ -16,7 +17,8 @@ class OrbitdbAPI extends Express {
 
         var error_handler = (err, req, res, next) => {
             if (err) {
-                console.error(err)
+                err_json = json.dumps(err)
+                console.error(err_json)
                 if (res.headersSent) {
                     return next(err)
                 }
