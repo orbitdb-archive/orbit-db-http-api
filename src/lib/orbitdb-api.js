@@ -16,8 +16,7 @@ class OrbitdbAPI extends Express {
 
         var error_handler = (err, req, res, next) => {
             if (err) {
-                var err_json = JSON.stringify(err)
-                console.error(err_json)
+                console.error(err)
                 if (res.headersSent) {
                     return next(err)
                 }
