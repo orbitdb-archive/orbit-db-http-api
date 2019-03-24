@@ -76,6 +76,12 @@ async function init () {
                 default:
                 throw new Error('Unrecognised ipfs type');
         }
+
+        if (args['--debug']) {
+            console.log('Debug enabled')
+            orbitdb_api.debug = true
+        }
+
         api_port = args['--api-port'] || process.env.API_PORT || 3000
         orbitdb_api.listen(api_port, () => {
             console.log(`Server running on port ${api_port}`);
