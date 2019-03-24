@@ -1,5 +1,4 @@
 const Express   = require('express');
-const JSON = require('json')
 
 const asyncMiddleware = fn =>
 (req, res, next) => {
