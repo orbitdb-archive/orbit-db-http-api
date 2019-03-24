@@ -18,6 +18,7 @@ Usage:
     cli.js -h | --help | --version
 
 Options:
+    --debug                         Enable debug response on error
     --api-port=API_PORT             Listen for api calls on API_PORT
     --orbitdb-dir=ORBITDB_DIR       Store orbit-db files in ORBITDB_DIR
     --orbitdb-conf=ORBITDB_CONF     Load orbit-db conf options from ORBITDB_CONF
