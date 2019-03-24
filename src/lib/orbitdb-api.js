@@ -26,6 +26,8 @@ class OrbitdbAPI extends Express {
             next()
         }
 
+        this.use(error_handler);
+
         this.get('/dbs', (req, res, next) => {
             try {
                 return res.json(dbm.db_list());
@@ -175,8 +177,6 @@ class OrbitdbAPI extends Express {
             }
             return res.json(result)
         }));
-
-        this.use(error_handler);
     }
 }
 
