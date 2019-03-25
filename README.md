@@ -210,7 +210,7 @@ overwrite flag:
 curl http://localhost:3000/db/docstore -d "create=true" -d "type=docstore" -d "overwrite=true"
 ```
 
-### POST|PUT /db/:dbname/iterator
+### GET /db/:dbname/iterator
 
 Gets items from an eventlog or feed database :dbname.
 
