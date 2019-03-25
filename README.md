@@ -199,7 +199,7 @@ database does not exist locally it will be fetched from the swarm.
 The address MUST be URL escaped.
 
 ```shell
-curl http://localhost:3000/db/zdpuAmnfJZ6UTssG5Ns3o8ALXZJXVx5eTLTxf7gfFzHxurbJq%2Fdocstore
+curl -X POST http://localhost:3000/db/zdpuAmnfJZ6UTssG5Ns3o8ALXZJXVx5eTLTxf7gfFzHxurbJq%2Fdocstore
 ```
 
 By default, OrbitDB will open the database if one already exists with the same
