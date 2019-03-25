@@ -77,7 +77,7 @@ class OrbitdbAPI extends Express {
         var db_inc = asyncMiddleware( async (req, res, next) => {
             let db, hash
             db = await dbm.get(req.params.dbname)
-            hash = await db.inc(parseInt(req.body.val))
+            hash = await db.inc(parseInt(req.body.val || 1))
             return res.json(hash)
         });
 
