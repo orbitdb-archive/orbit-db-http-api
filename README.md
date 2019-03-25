@@ -169,7 +169,8 @@ curl -X GET http://localhost:3000/db/docstore/1
 
 ### POST /db/:dbname
 
-Creates a new database and returns information about the newly created database.
+Creates a new database and returns information about the newly created database
+or opens an existing database with the same name.
 
 Returns information about the database as a JSON object.
 
@@ -190,6 +191,23 @@ POST param (this would apply to type docstore only):
 
 ```shell
 curl http://localhost:3000/db/docstore -d "create=true" -d "type=docstore" -d "indexBy=name"
+```
+
+To open an existing database, specify the address of the database. If the
+database does not exist locally it will be fetched from the swarm.
+
+The address MUST be URL escaped.
+
+```shell
+curl http://localhost:3000/db/zdpuAmnfJZ6UTssG5Ns3o8ALXZJXVx5eTLTxf7gfFzHxurbJq%2Fdocstore
+```
+
+By default, OrbitDB will open the database if one already exists with the same
+name. To always overwrite the existing database with a new one, pass the
+overwrite flag:
+
+```shell
+curl http://localhost:3000/db/docstore -d "create=true" -d "type=docstore" -d "overwrite=true"
 ```
 
 ### POST|PUT /db/:dbname/iterator
