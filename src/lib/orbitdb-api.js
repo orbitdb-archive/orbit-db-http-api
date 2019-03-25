@@ -13,6 +13,8 @@ class OrbitdbAPI extends Express {
 
         this.use(Express.urlencoded({extended: true }));
         this.use(Express.json());
+        this.use(error_handler);
+
 
         var error_handler = (err, req, res, next) => {
             if (err) {
