@@ -20,7 +20,7 @@ class OrbitdbAPI extends Express {
                 if (res.headersSent) {
                     return next(err)
                 }
-                if (this.debug) return res.status(err.statusCode || 500).json([str(err), err]);
+                if (this.debug) return res.status(err.statusCode || 500).json([String(err), err]);
                 return res.status(err.statusCode || 500).json('ERROR')
             }
             next()
