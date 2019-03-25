@@ -3,7 +3,7 @@ const Express   = require('express');
 const asyncMiddleware = fn =>
 (req, res, next) => {
     Promise.resolve(fn(req, res, next))
-      .catch((err) => next();
+      .catch((err) => next());
 };
 
 class OrbitdbAPI extends Express {
