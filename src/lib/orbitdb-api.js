@@ -66,7 +66,14 @@ class OrbitdbAPI extends Express {
         var db_put = asyncMiddleware( async (req, res, next) => {
             let db, hash
             db = await dbm.get(req.params.dbname)
-            hash = await db.put(req.body)
+
+            if (db.type == 'keyvalue') {
+                let params = req.body;
+                hash = await db.put(params.key, JSON.parse(params.value))
+            } else {
+                hash = await db.put(req.body)
+            }
+
             return res.json(hash)
         });
 
