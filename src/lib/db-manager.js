@@ -16,6 +16,10 @@ class DBManager {
             }
         };
 
+        this.db_list_remove = (dbname) => {
+            delete _dbs[dbname];
+        }
+
         this.db_list = () => {
             let db_info_list = {};
             for (var dbn in _dbs) {
@@ -50,4 +54,3 @@ class DBManager {
 }
 
 module.exports = DBManager;
-

@@ -297,6 +297,14 @@ curl -X POST http://localhost:3000/db/counter/inc/100
 zdpuAmHw9Tcc4pyVjcVX3rJNJ7SGffmu4EwjodzmaPBVGGzbd
 ```
 
+### DELETE /db/:dbname
+
+Deletes the local database :dbname. This does not delete any data from peers.
+
+```shell
+curl -X DELETE http://localhost:3000/db/docstore
+```
+
 ### DELETE /db/:dbname/:item
 
 Deletes the item specified by :item from the database :dbname.
