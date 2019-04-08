@@ -239,6 +239,22 @@ curl -X GET http://localhost:3000/db/feed/iterator -d 'limit=-1'
 See [OrbitDB's Iterator API](https://github.com/orbitdb/orbit-db/blob/master/API.md#iteratoroptions-1)
 for more information.
 
+### GET /db/:dbname/all
+
+Gets all items from a keyvalue database :dbname.
+
+Returns all items from a keyvalue store as a JSON object.
+
+Can only be used on keyvalue.
+
+```shell
+curl -X GET http://localhost:3000/db/all
+```
+
+```json
+{"Key1":{"name":"Value1"},"Key2":{"name":"Value2"},"projects":"{["orbitdb","ipfs"]}}
+```
+
 ### POST|PUT /db/:dbname/add
 
 Adds a new entry to the eventlog or feed database :dbname.
@@ -267,6 +283,13 @@ curl -X POST http://localhost:3000/db/docstore/put -H "Content-Type: application
 
 ```json
 zdpuAkkFaimxyRE2bsiLRSiybkku3oDi4vFHqPZh29BABZtZU
+```
+
+For the keyvalue store, a JSON object containing the variables `key` and
+`value` must be passed in the POST data:
+
+```shell
+curl -X POST http://localhost:3000/db/keyvalue/put  -H "Content-Type: application/json" -d '{"key":"Key","value":{ "name": "Value" }}'
 ```
 
 ### POST|PUT /db/:dbname/inc
