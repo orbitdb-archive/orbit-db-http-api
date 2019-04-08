@@ -21,8 +21,7 @@ async function api_factory(ipfs_opts, orbitdb_dir, orbitdb_opts) {
             }
         }
     }
-    if (!orbitdb_opts) orbitdb_opts = {}
-    if (orbitdb_dir) orbitdb_opts = object.assign({'directory': orbitdb_dir}, orbitdb_opts)
+    if (orbitdb_dir) orbitdb_opts = Object.assign({'directory': orbitdb_dir}, orbitdb_opts)
     ipfs_opts   = Object.assign(ipfs_defaults, ipfs_opts)
     ipfs        = await new Promise((resolve, reject) => {
         var node = new Ipfs(ipfs_opts)
