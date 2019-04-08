@@ -269,6 +269,13 @@ curl -X POST http://localhost:3000/db/docstore/put -H "Content-Type: application
 zdpuAkkFaimxyRE2bsiLRSiybkku3oDi4vFHqPZh29BABZtZU
 ```
 
+For the keyvalue store, a JSON object containing the variables `key` and
+`value` must be passed in the POST data:
+
+```shell
+curl -X POST http://localhost:3001/db/keyvalue/put  -H "Content-Type: application/json" -d '{"key":"Key","value":{ "name": "Value" }}'
+```
+
 ### POST|PUT /db/:dbname/inc
 
 Increments the counter database :dbname by 1.
