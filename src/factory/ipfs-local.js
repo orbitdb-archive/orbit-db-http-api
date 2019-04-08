@@ -29,7 +29,7 @@ async function api_factory(ipfs_opts, orbitdb_dir, orbitdb_opts) {
           resolve(node)
         })
       }).catch((ex) => {throw ex})
-    if (orbitdb_dir) orbitdb_opts = object.assign({'directory': orbitdb_dir}, orbitdb_opts)
+    if (orbitdb_dir) orbitdb_opts = object.assign({'directory': orbitdb_dir}, orbitdb_opts || {})
     orbitdb     = await OrbitDB.createInstance(ipfs, orbitdb_opts)
     dbm         = new DBManager(orbitdb)
     orbitdb_api = new OrbitApi(dbm)
