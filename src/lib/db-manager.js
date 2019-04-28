@@ -3,14 +3,20 @@ class DBManager {
         let _dbs = {};
 
         let find_db = (dbn)  => {
+            let result
+            console.log(`Serching for ${dbn} in DBs`)
             if (dbn in _dbs) return _dbs[dbn]
-            Object.values(_dbs).forEach(db => {
+            for (let db of Object.values(_dbs)) {
                 if (dbn == db.id) {
-                    return db
+                    result = db
+                    break
                 } else if (dbn == [db.address.root, db.address.path].join('/')) {
-                    return db
+                    result = db
+                    break
                 }
-            });
+            };
+            if (result) return result
+            console.log(`DB ${dbn} not found`)
         };
 
         this.get = async (dbn, params) => {
@@ -38,7 +44,7 @@ class DBManager {
 
         this.db_list = () => {
             let db_info_list = {};
-            for (var dbn in _dbs) {
+            for (let dbn in _dbs) {
                 if (_dbs.hasOwnProperty(dbn)) {
                     db_info_list[dbn] = this.db_info(dbn);
                 }
