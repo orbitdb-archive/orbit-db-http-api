@@ -5,9 +5,9 @@ class DBManager {
         let find_db = (dbn)  => {
             if (dbn in _dbs) return _dbs[dbn]
             Object.values(_dbs).forEach(db => {
-                if (dbn = db.id) {
+                if (dbn == db.id) {
                     return db
-                } else if (dbn = [db.address.root, db.address.path].join('/')) {
+                } else if (dbn == [db.address.root, db.address.path].join('/')) {
                     return db
                 }
             });
