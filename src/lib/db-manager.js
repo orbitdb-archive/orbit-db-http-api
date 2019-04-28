@@ -30,7 +30,7 @@ class DBManager {
         this.db_list_remove = async (dbn) => {
             let db = find_db(dbn)
             if (db) {
-                await db.disconnect()
+                await db.close()
                 delete _dbs[db.dbname];
             }
         }
