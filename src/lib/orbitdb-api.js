@@ -56,11 +56,7 @@ class OrbitdbAPI extends Express {
         });
 
         this.delete('/db/:dbname', asyncMiddleware( async (req, res, next) => {
-            let db
-            db = await dbm.get(req.params.dbname)
-
-            await db.drop()
-            dbm.db_list_remove(req.params.dbname)
+            await dbm.db_list_remove(req.params.dbname)
             return res.json('')
         }))
 
@@ -82,8 +78,14 @@ class OrbitdbAPI extends Express {
             db = await dbm.get(req.params.dbname)
 
             if (db.type == 'keyvalue') {
-                let params = req.body;
-                hash = await db.put(params.key, params.value)
+                let params, key, value
+                params = req.body;
+                if (!params['key']) {
+                    [key,value] = [Object.keys(params)[0], Object.values(params)[0]]
+                } else {
+                    ({key,value} = params)
+                }
+                hash = await db.put(key, value)
             } else {
                 hash = await db.put(req.body)
             }
@@ -184,12 +186,6 @@ class OrbitdbAPI extends Express {
             let db, val
             db = await dbm.get(req.params.dbname)
             return res.json(db.value)
-        }));
-
-        this.get('/db/:dbname/all',  asyncMiddleware( async (req, res, next) => {
-            let db
-            db = await dbm.get(req.params.dbname)
-            return res.json(db.all())
         }));
 
         this.get('/db/:dbname/:item',  asyncMiddleware( async (req, res, next) => {
