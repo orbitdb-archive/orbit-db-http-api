@@ -4,7 +4,6 @@ class DBManager {
 
         let find_db = (dbn)  => {
             let result
-            console.log(`Serching for ${dbn} in DBs`)
             if (dbn in _dbs) return _dbs[dbn]
             for (let db of Object.values(_dbs)) {
                 if (dbn == db.id) {
@@ -16,7 +15,6 @@ class DBManager {
                 }
             };
             if (result) return result
-            console.log(`DB ${dbn} not found`)
         };
 
         this.get = async (dbn, params) => {
