@@ -2,13 +2,30 @@ class DBManager {
     constructor(orbitdb){
         let _dbs = {};
 
-        this.get = async (dbname, params) => {
-            if (dbname in _dbs) {
-                return _dbs[dbname];
+        let find_db = (dbn)  => {
+            let result
+            console.log(`Serching for ${dbn} in DBs`)
+            if (dbn in _dbs) return _dbs[dbn]
+            for (let db of Object.values(_dbs)) {
+                if (dbn == db.id) {
+                    result = db
+                    break
+                } else if (dbn == [db.address.root, db.address.path].join('/')) {
+                    result = db
+                    break
+                }
+            };
+            if (result) return result
+            console.log(`DB ${dbn} not found`)
+        };
+
+        this.get = async (dbn, params) => {
+            let db = find_db(dbn);
+            if (db) {
+                return db;
             } else {
-                let db;
-                console.log(`Opening db ${dbname}`);
-                db = await orbitdb.open(dbname, params);
+                console.log(`Opening db ${dbn}`);
+                db = await orbitdb.open(dbn, params);
                 await db.load();
                 console.log(`Loaded db ${db.dbname}`);
                 _dbs[db.dbname] = db;
@@ -16,13 +33,18 @@ class DBManager {
             }
         };
 
-        this.db_list_remove = (dbname) => {
-            delete _dbs[dbname];
+        this.db_list_remove = async (dbn) => {
+            let db = find_db(dbn)
+            if (db) {
+                await db.close()
+                delete _dbs[db.dbname];
+                console.log(`Unloaded db ${db.dbname}`);
+            }
         }
 
         this.db_list = () => {
             let db_info_list = {};
-            for (var dbn in _dbs) {
+            for (let dbn in _dbs) {
                 if (_dbs.hasOwnProperty(dbn)) {
                     db_info_list[dbn] = this.db_info(dbn);
                 }
@@ -31,7 +53,7 @@ class DBManager {
         };
 
         this.db_info = (dbn) => {
-            var db = _dbs[dbn];
+            let db = find_db(dbn);
             if (!db) return {};
             return {
                 address: db.address,
