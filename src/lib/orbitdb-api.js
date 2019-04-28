@@ -68,8 +68,14 @@ class OrbitdbAPI extends Express {
             db = await dbm.get(req.params.dbname)
 
             if (db.type == 'keyvalue') {
-                let params = req.body;
-                hash = await db.put(params.key, params.value)
+                let params, key, value
+                params = req.body;
+                if (!params['key']) {
+                    [key,value] = [Object.keys(params)[0], Object.values(params)[0]]
+                } else {
+                    ({key,value} = params)
+                }
+                hash = await db.put(key, value)
             } else {
                 hash = await db.put(req.body)
             }
