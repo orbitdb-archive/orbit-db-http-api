@@ -32,6 +32,7 @@ class DBManager {
             if (db) {
                 await db.close()
                 delete _dbs[db.dbname];
+                console.log(`Unloaded db ${db.dbname}`);
             }
         }
 
