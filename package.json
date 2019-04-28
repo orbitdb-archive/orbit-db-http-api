@@ -1,16 +1,16 @@
 {
     "name": "orbit-db-api",
-    "version": "1.0.0",
+    "version": "0.1.0-rc.1.1",
     "description": "HTTP Api For OrbitDb",
-    "main": "cli.js",
+    "main": "src/cli.js",
     "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "author": "Phillip Mackintosh",
+    "author": "Phillip Mackintosh, Hayden Young",
     "license": "MIT",
     "repository": {
       "type": "git",
-      "url": "hhttps://github.com/phillmac/orbit-db-api"
+      "url": "https://github.com/phillmac/orbit-db-api"
     },
     "engines": {
       "node": ">=10.0.0"
