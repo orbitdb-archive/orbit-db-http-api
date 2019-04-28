@@ -2,13 +2,24 @@ class DBManager {
     constructor(orbitdb){
         let _dbs = {};
 
-        this.get = async (dbname, params) => {
-            if (dbname in _dbs) {
-                return _dbs[dbname];
+        let find_db = (dbn)  => {
+            if (dbn in _dbs) return _dbs[dbn]
+            _dbs.forEach(db => {
+                if (dbn = db.id) {
+                    return db
+                } else if (dbn = [db.address.root, db.address.path].join('/')) {
+                    return db
+                }
+            });
+        };
+
+        this.get = async (dbn, params) => {
+            let db = find_db(dbn);
+            if (db) {
+                return db;
             } else {
-                let db;
-                console.log(`Opening db ${dbname}`);
-                db = await orbitdb.open(dbname, params);
+                console.log(`Opening db ${dbn}`);
+                db = await orbitdb.open(dbn, params);
                 await db.load();
                 console.log(`Loaded db ${db.dbname}`);
                 _dbs[db.dbname] = db;
@@ -16,8 +27,12 @@ class DBManager {
             }
         };
 
-        this.db_list_remove = (dbname) => {
-            delete _dbs[dbname];
+        this.db_list_remove = (dbn) => {
+            db = find_db(dbn)
+            if (db) {
+                await db.disconnect()
+                delete _dbs[db.dbname];
+            }
         }
 
         this.db_list = () => {
@@ -31,16 +46,7 @@ class DBManager {
         };
 
         this.db_info = (dbn) => {
-            var db = _dbs[dbn];
-            if (!db) {
-                _dbs.forEach(d => {
-                    if (dbn = d.id) {
-                        db = d
-                    } else if (dbn = [d.address.root, d.address.path].join('/')) {
-                        db = d
-                    }
-                });
-            }
+            let db = find_db(dbn);
             if (!db) return {};
             return {
                 address: db.address,
