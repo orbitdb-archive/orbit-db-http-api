@@ -32,6 +32,15 @@ class DBManager {
 
         this.db_info = (dbn) => {
             var db = _dbs[dbn];
+            if (!db) {
+                _dbs.forEach(d => {
+                    if (dbn = d.id) {
+                        db = d
+                    } else if (dbn = [d.address.root, d.address.path].join('/')) {
+                        db = d
+                    }
+                });
+            }
             if (!db) return {};
             return {
                 address: db.address,
