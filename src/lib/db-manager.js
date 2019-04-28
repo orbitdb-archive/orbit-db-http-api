@@ -27,7 +27,7 @@ class DBManager {
             }
         };
 
-        this.db_list_remove = (dbn) => {
+        this.db_list_remove = async (dbn) => {
             db = find_db(dbn)
             if (db) {
                 await db.disconnect()

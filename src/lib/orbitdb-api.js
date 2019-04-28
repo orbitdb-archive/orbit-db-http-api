@@ -42,11 +42,7 @@ class OrbitdbAPI extends Express {
         });
 
         this.delete('/db/:dbname', asyncMiddleware( async (req, res, next) => {
-            let db
-            db = await dbm.get(req.params.dbname)
-
-            await db.drop()
-            dbm.db_list_remove(req.params.dbname)
+            await dbm.db_list_remove(req.params.dbname)
             return res.json('')
         }))
 
