@@ -1,6 +1,6 @@
 {
     "name": "orbit-db-api",
-    "version": "0.1.0-rc.1.1",
+    "version": "0.1.0-rc.2",
     "description": "HTTP Api For OrbitDb",
     "main": "src/cli.js",
     "scripts": {
@@ -20,6 +20,6 @@
       "express": "^4.16.4",
       "ipfs": "^0.34.4",
       "ipfs-http-client": "^30.0.0",
-      "orbit-db": "0.20.0-rc.1.1"
+      "orbit-db": "~0.20.0-rc8"
     }
   }
