@@ -1,6 +1,6 @@
 {
-    "name": "orbit-db-api",
-    "version": "0.1.0-rc.2",
+    "name": "orbit-db-http-api",
+    "version": "0.1.0-rc.3",
     "description": "HTTP Api For OrbitDb",
     "main": "src/cli.js",
     "scripts": {
@@ -10,7 +10,7 @@
     "license": "MIT",
     "repository": {
       "type": "git",
-      "url": "https://github.com/phillmac/orbit-db-api"
+      "url": "https://github.com/phillmac/orbit-db-http-api.git"
     },
     "engines": {
       "node": ">=10.0.0"
