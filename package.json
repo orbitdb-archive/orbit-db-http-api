@@ -1,8 +1,18 @@
 {
     "name": "orbit-db-http-api",
     "version": "0.1.0",
-    "description": "HTTP Api For OrbitDb",
+    "description": "An HTTP API Server for the OrbitDB distributed peer-to-peer database",
     "main": "src/cli.js",
+    "keywords": [
+      "orbitdb",
+      "orbit-db",
+      "http",
+      "api",
+      "server",
+      "peer-to-peer",
+      "database",
+      "db"
+    ],
     "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1"
     },
