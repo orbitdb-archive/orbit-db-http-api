@@ -20,7 +20,7 @@
   - [GET /db/:dbname/:item](#get-dbdbnameitem)
   - [POST /db/:dbname](#post-dbdbname)
   - [GET /db/:dbname/iterator](#get-dbdbnameiterator)
-  - [GET /db/:dbname/all](#get-dbdbnameall)
+  - [GET /db/:dbname/index](#get-dbdbnameindex)
 
 ## Install
 
@@ -257,20 +257,39 @@ curl -X GET http://localhost:3000/db/feed/iterator -d 'limit=-1'
 See [OrbitDB's Iterator API](https://github.com/orbitdb/orbit-db/blob/master/API.md#iteratoroptions-1)
 for more information.
 
-### GET /db/:dbname/all
+### GET /db/:dbname/index
 
-Gets all items from a keyvalue database :dbname.
+Gets information about the data stored in :dbname.
 
-Returns all items from a keyvalue store as a JSON object.
+Returns information about the data stored as a JSON object.
 
-Can only be used on keyvalue.
+For the data store keyvalue all records are returned:
 
 ```shell
-curl -X GET http://localhost:3000/db/all
+curl -X GET http://localhost:3000/keyvalue/index
 ```
 
 ```json
-{"Key1":{"name":"Value1"},"Key2":{"name":"Value2"},"projects":"\{["orbitdb","ipfs"]}}
+{"Key":{"name1":"Value1"},"Key2":{"name":"Value2"}}
+```
+
+Docstore and feed return all records as well as iterators, signature hashes and
+other information about the stored data:
+
+```json
+{"1":{"cid":"zdpuB1sqnXKwgAtJT7vqtrRUsyr4XUZyhume9uJgrrwZmyegu","id":"/orbitdb/zdpuAzpw8yuuMEuffMFcgXafsAye9GqBPwTjmiJijHz3akFhx/docstore","payload":{"op":"PUT","key":1,"value":{"_id":1,"name":"1"}},"next":[],"v":1,"clock":...}}
+```
+
+The eventlog returns the hash of the last stored item:
+
+```json
+{"id":"/orbitdb/zdpuB1r3rfya65UUjQu6GsBXEmp5gmjvMwRGwkxd4ySwYnBSK/eventlog","heads":["zdpuAu7eTsdWoQ76CdWCbjcsGV3s6duYyUujaHQiGCAZPLWMb"]}
+```
+
+The counter data store returns information about the current counter value:
+
+```json
+{"id":"04e6de9dd0e8d0069bcc6d8f3ef11cefe63bba6129c32f2cd422a0394814bc6723b26eb62731ee466020b0394d01dd08e4a5123eaad45e4d0840fd796652a22e42","counters":{"04e6de9dd0e8d0069bcc6d8f3ef11cefe63bba6129c32f2cd422a0394814bc6723b26eb62731ee466020b0394d01dd08e4a5123eaad45e4d0840fd796652a22e42":15}}
 ```
 
 ### POST|PUT /db/:dbname/add
