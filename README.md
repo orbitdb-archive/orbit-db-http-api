@@ -211,6 +211,13 @@ POST param (this would apply to type docstore only):
 curl http://localhost:3000/db/docstore -d "create=true" -d "type=docstore" -d "indexBy=name"
 ```
 
+Parameters can also be passed as JSON. This is useful if additional parameters
+such as accessController need to be specified:
+
+```shell
+curl -H "Content-Type: application/json" --data '{"create":"true","type":"feed","accessController":{"type": "orbitdb","write": ["1234"]}}'
+```
+
 To open an existing database, specify the address of the database. If the
 database does not exist locally it will be fetched from the swarm.
 
