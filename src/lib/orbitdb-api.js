@@ -208,6 +208,10 @@ class OrbitdbAPI extends Express {
             return res.json(result)
         }));
 
+        this.use(function(req, res, next){
+            return res.status(404).json(`Cannot ${req.method} ${req.url}`);
+        })
+
         this.use(function (err, req, res, next) {
             console.error(err)
             if (res.headersSent) {
