@@ -67,7 +67,21 @@ class DBManager {
                     replicate: db.options.replicate,
                 },
                 type: db.type,
-                uid: db.uid
+                uid: db.uid,
+                capabilities: Object.keys(                                         //TODO: cleanup this mess once tc39 object.fromEntries aproved
+                    Object.assign ({}, ...                                         // https://tc39.github.io/proposal-object-from-entries
+                        Object.entries({
+                            add: typeof db.add == 'function',
+                            get: typeof db.get == 'function',
+                            inc: typeof db.inc == 'function',
+                            iterator: typeof db.iterator == 'function',
+                            put: typeof db.put == 'function',
+                            query: typeof db.query == 'function',
+                            remove: typeof (db.del || db.remove) == 'function',
+                            value: typeof db.value == 'function'
+                        }).filter(([k,v]) => v).map(([k,v]) => ({[k]:v}))
+                    )
+                )
             };
         };
     }
