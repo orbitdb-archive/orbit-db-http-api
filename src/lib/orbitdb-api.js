@@ -151,7 +151,7 @@ class OrbitdbAPI extends Express {
         this.get('/db/:dbname/iterator',  asyncMiddleware( async (req, res, next) => {
             let result, raw;
             raw = await rawiterator(req,res,next)
-            result = raw.map((e) => e.payload.value)
+            result = raw.map((e) => Object.keys(e.payload.value)[0])
             return res.json(result)
         }));
 
@@ -176,6 +176,19 @@ class OrbitdbAPI extends Express {
             return res.json(contents)
         }));
 
+        this.get('/db/:dbname/all',  asyncMiddleware( async (req, res, next) => {
+            let db, result, contents
+            db = await dbm.get(req.params.dbname)
+            if (typeof db._query == 'function') {
+                contents = db._query({limit:-1})
+                result = contents.map((e) => Object.keys(e.payload.value)[0])
+            } else {
+                contents = db.all
+                result = unpack_contents(contents)
+            }
+            return res.json(result)
+        }));
+
         this.get('/db/:dbname/index',  asyncMiddleware( async (req, res, next) => {
             let db
             db = await dbm.get(req.params.dbname)
@@ -188,16 +201,24 @@ class OrbitdbAPI extends Express {
             return res.json(db.value)
         }));
 
+        var unpack_contents = (contents) => {
+            if (contents){
+                if (contents.map) {
+                   return contents.map((e) => {
+                        if (e.payload) return e.payload.value
+                        return e
+                    })
+                } else if (contents.payload) {
+                   return contents.payload.value
+                }
+            }
+            return contents
+        }
+
         this.get('/db/:dbname/:item',  asyncMiddleware( async (req, res, next) => {
             let result, contents
             contents = await getraw(req,res, next)
-            if (contents && contents.map && contents.payload) {
-                result = contents.map((e) => e.payload.value)
-            } else if (contents && contents.payload) {
-                result = contents.payload.value
-            } else {
-                result = contents
-            }
+            result =  unpack_contents(contents)
             return res.json(result)
         }));
 
