@@ -18,9 +18,18 @@
     - [Modulus Query](#modulus-query)
     - [Range Query](#range-query)
   - [GET /db/:dbname/:item](#get-dbdbnameitem)
-  - [POST /db/:dbname](#post-dbdbname)
   - [GET /db/:dbname/iterator](#get-dbdbnameiterator)
   - [GET /db/:dbname/index](#get-dbdbnameindex)
+  - [GET /identity](#get-identity)
+  - [POST /db/:dbname](#post-dbdbname)
+  - [POST|PUT /db/:dbname/add](#post-put-dbdbnameadd)
+  - [POST|PUT /db/:dbname/put](#post-put-dbdbnameput)
+  - [POST|PUT /db/:dbname/inc](#post-put-dbdbnameinc)
+  - [POST|PUT /db/:dbname/inc/:val](#post-put-dbdbnameincval)
+  - [DELETE /db/:dbname](#delete-dbdbname)
+  - [DELETE /db/:dbname/:item](#delete-dbdbnameitem)
+- [Contribute](#contribute)
+- [License](#license)
 
 ## Install
 
@@ -185,56 +194,6 @@ curl -X GET http://localhost:3000/db/docstore/1
 [{"_id":1, "value": "test"}]
 ```
 
-### POST /db/:dbname
-
-Creates a new database and returns information about the newly created database
-or opens an existing database with the same name.
-
-Returns information about the database as a JSON object.
-
-The OrbitDB options ```create=true``` and ```type=eventlog|feed|docstore|keyvalue|counter```
-must be sent with the POST otherwise an error is thrown.
-
-```shell
-curl http://localhost:3000/db/docstore -d "create=true" -d "type=docstore"
-```
-
-```json
-{"address":{"root":"zdpuAmnfJZ6UTssG5Ns3o8ALXZJXVx5eTLTxf7gfFzHxurbJq","path":"docstore"},"dbname":"docstore","id":"/orbitdb/zdpuAmnfJZ6UTssG5Ns3o8ALXZJXVx5eTLTxf7gfFzHxurbJq/docstore","options":{"create":"true","indexBy":"_id","localOnly":false,"maxHistory":-1,"overwrite":true,"replicate":true},"type":"docstore"}
-```
-
-Additional OrbitDB-specific flags can also be passed. For example, if the index
-field must be changed then the indexBy flag can be specified as an additional
-POST param (this would apply to type docstore only):
-
-```shell
-curl http://localhost:3000/db/docstore -d "create=true" -d "type=docstore" -d "indexBy=name"
-```
-
-Parameters can also be passed as JSON. This is useful if additional parameters
-such as accessController need to be specified:
-
-```shell
-curl -H "Content-Type: application/json" --data '{"create":"true","type":"feed","accessController":{"type": "orbitdb","write": ["1234"]}}'
-```
-
-To open an existing database, specify the address of the database. If the
-database does not exist locally it will be fetched from the swarm.
-
-The address MUST be URL escaped.
-
-```shell
-curl -X POST http://localhost:3000/db/zdpuAmnfJZ6UTssG5Ns3o8ALXZJXVx5eTLTxf7gfFzHxurbJq%2Fdocstore
-```
-
-By default, OrbitDB will open the database if one already exists with the same
-name. To always overwrite the existing database with a new one, pass the
-overwrite flag:
-
-```shell
-curl http://localhost:3000/db/docstore -d "create=true" -d "type=docstore" -d "overwrite=true"
-```
-
 ### GET /db/:dbname/iterator
 
 Gets items from an eventlog or feed database :dbname.
@@ -297,6 +256,70 @@ The counter data store returns information about the current counter value:
 
 ```json
 {"id":"04e6de9dd0e8d0069bcc6d8f3ef11cefe63bba6129c32f2cd422a0394814bc6723b26eb62731ee466020b0394d01dd08e4a5123eaad45e4d0840fd796652a22e42","counters":{"04e6de9dd0e8d0069bcc6d8f3ef11cefe63bba6129c32f2cd422a0394814bc6723b26eb62731ee466020b0394d01dd08e4a5123eaad45e4d0840fd796652a22e42":15}}
+```
+
+### GET /identity
+
+Gets the identity information.
+
+Returns identity as a JSON object.
+
+```shell
+curl -X GET http://localhost:3000/identity
+```
+
+```json
+{"id":"03fc293ea95bdb5dea71d5d21cbbae2a57f2d2002c9966f0d5c7b0bda232d5934d","publicKey":"048161d9685991dc87f3e049aa04b1da461fdc5f8a280ed6234fa41c0f9bc98a1ce91f07494584a45b97160ac818e100a6b27777e0b1b09e6ba4795dcc797a6d8b","signatures":{"id":"3045022100e40ab2dcc83dde17c939d5515ce322e7f81bf47536ab342582db8c35f28d2a720220228e418cc3d2f3e0004d5f4292c0d2cf7975c93073e0cc831f0cb849e4ac920a","publicKey":"3045022100ad18ba66006e19e2952eabc9ffb532dd69d60593f90448a05d6f4903c2931e3502204009975030b839522c668cd693d357bf1f3d0423d604a6bc10645425a0a3dd1b"},"type":"orbitdb"}
+```
+
+### POST /db/:dbname
+
+Creates a new database and returns information about the newly created database
+or opens an existing database with the same name.
+
+Returns information about the database as a JSON object.
+
+The OrbitDB options ```create=true``` and ```type=eventlog|feed|docstore|keyvalue|counter```
+must be sent with the POST otherwise an error is thrown.
+
+```shell
+curl http://localhost:3000/db/docstore -d "create=true" -d "type=docstore"
+```
+
+```json
+{"address":{"root":"zdpuAmnfJZ6UTssG5Ns3o8ALXZJXVx5eTLTxf7gfFzHxurbJq","path":"docstore"},"dbname":"docstore","id":"/orbitdb/zdpuAmnfJZ6UTssG5Ns3o8ALXZJXVx5eTLTxf7gfFzHxurbJq/docstore","options":{"create":"true","indexBy":"_id","localOnly":false,"maxHistory":-1,"overwrite":true,"replicate":true},"type":"docstore"}
+```
+
+Additional OrbitDB-specific flags can also be passed. For example, if the index
+field must be changed then the indexBy flag can be specified as an additional
+POST param (this would apply to type docstore only):
+
+```shell
+curl http://localhost:3000/db/docstore -d "create=true" -d "type=docstore" -d "indexBy=name"
+```
+
+Parameters can also be passed as JSON. This is useful if additional parameters
+such as accessController need to be specified:
+
+```shell
+curl -H "Content-Type: application/json" --data '{"create":"true","type":"feed","accessController":{"type": "orbitdb","write": ["1234"]}}'
+```
+
+To open an existing database, specify the address of the database. If the
+database does not exist locally it will be fetched from the swarm.
+
+The address MUST be URL escaped.
+
+```shell
+curl -X POST http://localhost:3000/db/zdpuAmnfJZ6UTssG5Ns3o8ALXZJXVx5eTLTxf7gfFzHxurbJq%2Fdocstore
+```
+
+By default, OrbitDB will open the database if one already exists with the same
+name. To always overwrite the existing database with a new one, pass the
+overwrite flag:
+
+```shell
+curl http://localhost:3000/db/docstore -d "create=true" -d "type=docstore" -d "overwrite=true"
 ```
 
 ### POST|PUT /db/:dbname/add
