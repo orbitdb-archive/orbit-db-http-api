@@ -201,11 +201,11 @@ class OrbitdbAPI extends Express {
             return contents
         }
 
-        this.get('/identity',  asyncMiddleware( async (req, res, next) => {
+        this.get('/identity', (req, res, next) => {
             const identity = dbm.identity()
 
             return res.json(identity)
-        }));
+        });
 
         var db_put_write_public_key =  asyncMiddleware( async (req, res, next) => {
             let db
