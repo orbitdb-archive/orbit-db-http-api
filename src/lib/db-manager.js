@@ -84,6 +84,10 @@ class DBManager {
                 )
             };
         };
+
+        this.identity = () => {
+            return orbitdb.identity;
+        };
     }
 }
 

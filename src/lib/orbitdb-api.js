@@ -201,6 +201,26 @@ class OrbitdbAPI extends Express {
             return contents
         }
 
+        this.get('/identity', (req, res, next) => {
+            try {
+                const identity = dbm.identity()
+                return res.json(identity)
+             } catch(err) {
+                next(err)
+            }
+        });
+
+        var db_put_write_public_key =  asyncMiddleware( async (req, res, next) => {
+            let db
+            db = await dbm.get(req.params.dbname)
+            await db.access.grant('write', req.body.publicKey)
+
+            return res.json('')
+        });
+
+        this.post('/db/:dbname/access/write', db_put_write_public_key);
+        this.put('/db/:dbname/access/write', db_put_write_public_key);
+
         this.get('/db/:dbname/:item',  asyncMiddleware( async (req, res, next) => {
             let result, contents
             contents = await getraw(req,res, next)
