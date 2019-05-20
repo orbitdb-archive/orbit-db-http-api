@@ -3,18 +3,10 @@ const Boom  = require('boom');
 const Http2 = require('http2');
 
 
-const asyncMiddleware = fn =>
-    (request, h) => Promise.resolve(fn(request, h))
-        .catch((err) => ErrorHandler(err, h));
-
-const ErrorHandler = (err, _h) => {
-    console.error(err);
-    return Boom.badImplementation();
-};
-
 class OrbitdbAPI {
     constructor (dbm, server_opts) {
-        let comparisons, rawiterator, getraw, unpack_contents, listener, dbMiddleware
+        let comparisons, rawiterator, getraw, unpack_contents, listener
+        let dbMiddleware, ErrorHandler, asyncMiddleware
 
         listener = Http2.createSecureServer(server_opts.http2_opts);
         this.server = new Hapi.Server({
@@ -41,6 +33,15 @@ class OrbitdbAPI {
                 return Promise.resolve((fn(db, request, h)))
                     .catch((err) => ErrorHandler(err, h));
         }
+
+        asyncMiddleware = fn =>
+            (request, h) => Promise.resolve(fn(request, h))
+                .catch((err) => ErrorHandler(err, h));
+
+        ErrorHandler = (err, _h) => {
+            console.error(err);
+            return Boom.badImplementation();
+};
 
         rawiterator = (db, request, _h) =>
             db.iterator(request.payload).collect();
