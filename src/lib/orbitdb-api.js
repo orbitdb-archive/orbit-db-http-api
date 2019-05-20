@@ -1,132 +1,28 @@
-const Express   = require('express');
+const Hapi  = require('hapi');
+const Boom  = require('boom');
+const Http2 = require('http2');
+
 
 const asyncMiddleware = fn =>
-(req, res, next) => {
-    Promise.resolve(fn(req, res, next))
-      .catch((err) => next(err));
+    (request, h) => Promise.resolve(fn(request, h))
+        .catch((err) => ErrorHandler(err, h));
+
+const ErrorHandler = (err, _h) => {
+    console.error(err);
+    return Boom.badImplementation();
 };
 
-class OrbitdbAPI extends Express {
-    constructor (dbm) {
-        super();
-        this.debug = false
+class OrbitdbAPI {
+    constructor (dbm, server_opts) {
+        let comparisons, rawiterator, getraw, unpack_contents, listener, dbMiddleware
 
-        this.use(Express.urlencoded({extended: true }));
-        this.use(Express.json());
+        listener = Http2.createSecureServer(server_opts.http2_opts);
+        this.server = new Hapi.Server({
+            listener,
+            tls: true,
+            port: server_opts.api_port});
 
-        var error_handler = (err, req, res, next) => {
-            if (err) {
-                console.error(err)
-                if (res.headersSent) {
-                    return next(err)
-                }
-                if (this.debug) return res.status(err.statusCode || 500).json([String(err), err]);
-                return res.status(err.statusCode || 500).json('ERROR')
-            }
-            next()
-        }
-        this.use(error_handler);
-
-        this.get('/dbs', (req, res, next) => {
-            try {
-                return res.json(dbm.db_list());
-            } catch(err) {
-                next(err)
-            }
-        });
-
-        this.post('/db', asyncMiddleware( async (req, res, next) => {
-            let db
-            db = await dbm.get(req.body.dbname, req.body)
-            return res.json(dbm.db_info(db.dbname));
-        }));
-
-        this.post('/db/:dbname', asyncMiddleware( async (req, res, next) => {
-            let db
-            db = await dbm.get(req.params.dbname, req.body)
-            return res.json(dbm.db_info(db.dbname));
-        }));
-
-        this.get('/db/:dbname', (req, res, next) => {
-            try {
-                return res.json(dbm.db_info(req.params.dbname));
-            } catch(err) {
-                next(err)
-            }
-        });
-
-        this.delete('/db/:dbname', asyncMiddleware( async (req, res, next) => {
-            await dbm.db_list_remove(req.params.dbname)
-            return res.json('')
-        }))
-
-        this.delete('/db/:dbname/:item', asyncMiddleware( async (req, res, next) => {
-            let db, hash
-            db = await dbm.get(req.params.dbname)
-            if (db.del) {
-                hash = await db.del(req.params.item)
-            } else if (db.remove) {
-                hash = await db.remove(req.params.item)
-            } else {
-                throw new Error(`DB type ${db.type} does not support removing data`)
-            }
-            return res.json(hash)
-        }));
-
-        var db_put = asyncMiddleware( async (req, res, next) => {
-            let db, hash
-            db = await dbm.get(req.params.dbname)
-
-            if (db.type == 'keyvalue') {
-                let params, key, value
-                params = req.body;
-                if (!params['key']) {
-                    [key,value] = [Object.keys(params)[0], Object.values(params)[0]]
-                } else {
-                    ({key,value} = params)
-                }
-                hash = await db.put(key, value)
-            } else {
-                hash = await db.put(req.body)
-            }
-
-            return res.json(hash)
-        });
-
-        this.post('/db/:dbname/put', db_put);
-        this.put('/db/:dbname/put', db_put);
-
-        var db_add = asyncMiddleware( async (req, res, next) => {
-            let db, hash
-            db = await dbm.get(req.params.dbname)
-            hash = await db.add(req.body)
-            return res.json(hash)
-        });
-
-        this.post('/db/:dbname/add', db_add);
-        this.put('/db/:dbname/add', db_add);
-
-        var db_inc = asyncMiddleware( async (req, res, next) => {
-            let db, hash
-            db = await dbm.get(req.params.dbname)
-            hash = await db.inc(parseInt(req.body.val || 1))
-            return res.json(hash)
-        });
-
-        this.post('/db/:dbname/inc', db_inc);
-        this.put('/db/:dbname/inc', db_inc);
-
-        var db_inc_val =  asyncMiddleware( async (req, res, next) => {
-            let db, hash
-            db = await dbm.get(req.params.dbname)
-            hash = await db.inc(parseInt(req.params.val))
-            return res.json(hash)
-        });
-
-        this.post('/db/:dbname/inc/:val', db_inc_val);
-        this.put('/db/:dbname/inc/:val', db_inc_val);
-
-        var comparisons = {
+        comparisons = {
             'ne': (a, b) => a != b,
             'eq': (a, b) => a == b,
             'gt': (a, b) => a > b,
@@ -138,70 +34,21 @@ class OrbitdbAPI extends Express {
             'all': () => true
         };
 
-        this.get('/db/:dbname/query',  asyncMiddleware( async (req, res, next) => {
-            let db, qparams, comparison, query, result;
-            db = await dbm.get(req.params.dbname);
-            qparams = req.body;
-            comparison = comparisons[qparams.comp || 'all']
-            query = (doc) => comparison(doc[qparams.propname || '_id'], ...qparams.values)
-            result = await db.query(query)
-            return res.json(result)
-        }));
-
-        this.get('/db/:dbname/iterator',  asyncMiddleware( async (req, res, next) => {
-            let result, raw;
-            raw = await rawiterator(req,res,next)
-            result = raw.map((e) => Object.keys(e.payload.value)[0])
-            return res.json(result)
-        }));
-
-        var rawiterator = async (req, res, next) => {
-            let db;
-            db = await dbm.get(req.params.dbname);
-            return db.iterator(req.body).collect()
-        };
-
-        this.get('/db/:dbname/rawiterator',  asyncMiddleware( async (req, res, next) => {
-            return res.json(await rawiterator(req,res,next))}));
-
-        var getraw = async (req, res, next) => {
-            let db
-            db = await dbm.get(req.params.dbname)
-            return await db.get(req.params.item)
+        dbMiddleware = fn =>
+            async (request, h) => {
+                let db
+                db = await dbm.get(request.params.dbname)
+                return Promise.resolve((fn(db, request, h)))
+                    .catch((err) => ErrorHandler(err, h));
         }
 
-        this.get('/db/:dbname/raw/:item',  asyncMiddleware( async (req, res, next) => {
-            let contents
-            contents = await getraw(req, res, next)
-            return res.json(contents)
-        }));
+        rawiterator = (db, request, _h) =>
+            db.iterator(request.payload).collect();
 
-        this.get('/db/:dbname/all',  asyncMiddleware( async (req, res, next) => {
-            let db, result, contents
-            db = await dbm.get(req.params.dbname)
-            if (typeof db._query == 'function') {
-                contents = db._query({limit:-1})
-                result = contents.map((e) => Object.keys(e.payload.value)[0])
-            } else {
-                contents = db.all
-                result = unpack_contents(contents)
-            }
-            return res.json(result)
-        }));
+        getraw = (db, request, _h) =>
+            db.get(request.params.item);
 
-        this.get('/db/:dbname/index',  asyncMiddleware( async (req, res, next) => {
-            let db
-            db = await dbm.get(req.params.dbname)
-            return res.json(db.index)
-        }));
-
-        this.get('/db/:dbname/value',  asyncMiddleware( async (req, res, next) => {
-            let db, val
-            db = await dbm.get(req.params.dbname)
-            return res.json(db.value)
-        }));
-
-        var unpack_contents = (contents) => {
+        unpack_contents = (contents) => {
             if (contents){
                 if (contents.map) {
                    return contents.map((e) => {
@@ -213,40 +60,202 @@ class OrbitdbAPI extends Express {
                 }
             }
             return contents
-        }
+        };
 
-        this.get('/identity', (req, res, next) => {
-            try {
-                const identity = dbm.identity()
-                return res.json(identity)
-             } catch(err) {
-                next(err)
+        this.server.route([
+            {
+                method: 'GET',
+                path: '/dbs',
+                handler: (_request, h) => {
+                    try {
+                        return dbm.db_list();
+                    } catch(err) {
+                        return ErrorHandler(err, h);
+                    }
+                }
+            },
+            {
+                method: ['POST', 'PUT'],
+                path: '/db',
+                handler: asyncMiddleware( async (request, _h) => {
+                    let db, payload;
+                    payload = request.payload;
+                    db = await dbm.get(payload.dbname, payload);
+                    return dbm.db_info(db.dbname);
+                })
+            },
+            {
+                method: ['POST', 'PUT'],
+                path: '/db/{dbname}',
+                handler: asyncMiddleware( async (request, _h) => {
+                    let db;
+                    db = await dbm.get(request.params.dbname, request.payload);
+                    return dbm.db_info(db.dbname);
+                })
+            },
+            {
+                method: 'GET',
+                path: '/db/{dbname}',
+                handler: (request, h) => {
+                    try {
+                       return dbm.db_info(request.params.dbname);
+                    } catch(err) {
+                        return ErrorHandler(err, h);
+                    }
+                }
+            },
+            {
+                method: 'DELETE',
+                path: '/db/{dbname}',
+                handler: asyncMiddleware( async (request, _h) => {
+                    await dbm.db_list_remove(request.params.dbname);
+                    return {};
+                })
+            },
+            {
+                method: 'DELETE',
+                path: '/db/{dbname}/{item}',
+                handler: dbMiddleware( async (db, request, _h) => {
+                    if (db.del) {
+                        return {hash: await db.del(request.params.item)};
+                    } else if (db.remove) {
+                        return {hash: await db.remove(request.params.item)};
+                    } else {
+                        return Boom.methodNotAllowed(`DB type ${db.type} does not support removing data`,
+                        {
+                            dbname: db.dbname,
+                            dbtype: db.type
+                        });
+                    }
+                })
+            },
+            {
+                method: ['POST', 'PUT'],
+                path: '/db/{dbname}/put',
+                handler: dbMiddleware( async (db, request, _h) => {
+                    let params;
+                    params = request.payload;
+
+                    if (db.type == 'keyvalue') {
+                        let key, value;
+                        if (!params['key']) {
+                            [key,value] = [Object.keys(params)[0], Object.values(params)[0]];
+                        } else {
+                            ({key,value} = params);
+                        }
+                        return {hash: await db.put(key, value)};
+                    } else {
+                        return {hash: await db.put(params)};
+                    }
+                })
+            },
+            {
+                method: ['POST', 'PUT'],
+                path: '/db/{dbname}/add',
+                handler: dbMiddleware( async (db, request, _h) => {
+                    return {hash: await db.add(request.payload)};
+                })
+            },
+            {
+                method: ['POST', 'PUT'],
+                path: '/db/{dbname}/inc',
+                handler: dbMiddleware( async (db, request, _h) => {
+                    return {hash: await db.inc(parseInt(request.payload.val || 1))};
+                })
+            },
+            {
+                method: ['POST', 'PUT'],
+                path: '/db/{dbname}/inc/{val}',
+                handler: dbMiddleware( async (db, request, _h) => {
+                    return {hash: await db.inc(parseInt(request.params.val || 1))};
+                })
+            },
+            {
+                method: 'GET',
+                path: '/db/{dbname}/query',
+                handler: dbMiddleware( async (db, request, _h) => {
+                    let qparams, comparison, query;
+                    qparams = request.payload;
+                    comparison = comparisons[qparams.comp || 'all'];
+                    query = (doc) => comparison(doc[qparams.propname || '_id'], ...qparams.values);
+                    return await db.query(query);
+                })
+            },
+            {
+                method: 'GET',
+                path: '/db/{dbname}/iterator',
+                handler:  dbMiddleware( async (db, request, h) => {
+                    let raw;
+                    raw = rawiterator(db, request, h);
+                    return raw.map((e) => Object.keys(e.payload.value)[0]);
+
+                })
+            },
+            {
+                method: 'GET',
+                path: '/db/{dbname}/rawiterator',
+                handler: dbMiddleware( async (db, request, h) => {
+                    return rawiterator(db, request, h);
+                })
+            },
+            {
+                method: 'GET',
+                path: '/db/{dbname}/raw/{item}',
+                handler: dbMiddleware( async (db, request, h) => {
+                    return getraw(db, request, h);
+                })
+            },
+            {
+                method: 'GET',
+                path: '/db/{dbname}/{item}',
+                handler: dbMiddleware( async (db, request, h) => {
+                    let raw;
+                    raw = getraw(db, request, h);
+                    return unpack_contents(raw);
+                })
+            },
+            {
+                method: 'GET',
+                path: '/db/{dbname}/all',
+                handler: dbMiddleware( async (db, _request, _h) => {
+                    if (typeof db._query == 'function') {
+                        contents = db._query({limit:-1})
+                       return contents.map((e) => Object.keys(e.payload.value)[0])
+                    } else {
+                        return unpack_contents(db.all)
+                    }
+                })
+            },
+            {
+                method: 'GET',
+                path: '/db/{dbname}/index',
+                handler: dbMiddleware( async (db, _request, _h) => db.index)
+            },
+            {
+                method: 'GET',
+                path: '/db/{dbname}/value',
+                handler: dbMiddleware( async (db, _request, _h) => db.value)
+           },
+           {
+                method: 'GET',
+                path: '/identity',
+                handler: (_request, h) => {
+                    try {
+                        return dbm.identity()
+                    } catch(err) {
+                        return ErrorHandler(err, h);
+                    }
+                }
+            },
+            {
+                method: ['POST', 'PUT'],
+                path: '/db/{dbname}/access/write',
+                handler: dbMiddleware( async (db, request, _h) => {
+                    await db.access.grant('write', request.payload.publicKey)
+                    return {};
+                })
             }
-        });
-
-        var db_put_write_public_key =  asyncMiddleware( async (req, res, next) => {
-            let db
-            db = await dbm.get(req.params.dbname)
-            await db.access.grant('write', req.body.publicKey)
-
-            return res.json('')
-        });
-
-        this.post('/db/:dbname/access/write', db_put_write_public_key);
-        this.put('/db/:dbname/access/write', db_put_write_public_key);
-
-        this.get('/db/:dbname/:item',  asyncMiddleware( async (req, res, next) => {
-            let result, contents
-            contents = await getraw(req,res, next)
-            result =  unpack_contents(contents)
-            return res.json(result)
-        }));
-
-        this.use(function(req, res, next){
-            return res.status(404).json(`Cannot ${req.method} ${req.url}`);
-        })
-
-        this.use(error_handler);
+        ]);
     }
 }
 

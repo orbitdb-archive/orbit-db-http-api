@@ -4,7 +4,7 @@ const DBManager = require('../lib/db-manager.js')
 const OrbitApi  = require('../lib/orbitdb-api.js')
 
 
-async function api_factory(ipfs_opts, orbitdb_dir, orbitdb_opts) {
+async function api_factory(ipfs_opts, orbitdb_dir, orbitdb_opts, server_opts) {
     let ipfs, orbitdb, dbm, orbitdb_api, ipfs_defaults
 
     ipfs_defaults = {
@@ -31,7 +31,7 @@ async function api_factory(ipfs_opts, orbitdb_dir, orbitdb_opts) {
       }).catch((ex) => {throw ex})
     orbitdb     = await OrbitDB.createInstance(ipfs, orbitdb_opts)
     dbm         = new DBManager(orbitdb)
-    orbitdb_api = new OrbitApi(dbm)
+    orbitdb_api = new OrbitApi(dbm, server_opts)
 
     return orbitdb_api
 }
