@@ -49,7 +49,7 @@ In local mode, OrbitDB HTTP Client will launch its own IPFS node to replicate
 the OrbitDB peer:
 
 ```shell
-node src/cli.js local --orbitdb-dir /path/to/orbitdb
+node src/cli.js local --orbitdb-dir /path/to/orbitdb --https-cert ./my.crt --https-key my.key
 ```
 
 where --orbitdb-dir is the path to your OrbitDB peer.
@@ -58,11 +58,24 @@ In api mode, OrbitDB HTTP Client will connect to an existing IPFS node to
 replicate the OrbitDB peer:
 
 ```shell
-node src/cli.js api --ipfs-host localhost --orbitdb-dir /path/to/orbitdb
+node src/cli.js api --ipfs-host localhost --orbitdb-dir /path/to/orbitdb --https-cert ./my.crt --https-key my.key
 ```
 
 where --ipfs-host is an external IPFS node and --orbitdb-dir is the path to
 your OrbitDB peer.
+
+In both modes, you will also need to specify an SSL certifcate and private key:
+
+--https-cert will be the path to your certificate.
+--https-key will be the path to your associated private key.
+
+You can generate an SSL certificate using an SSL certificate authority such as
+Let's Encrypt. Alternatively, you can create your own self-signed certificate
+although this is highly discouraged for production environments.
+
+When using a self-signed SSL certificate you will either need to add your
+certificate to your CA list or pass the ```-k``` option to curl, telling curl to
+ignore the the insecure connection.
 
 ## API
 
