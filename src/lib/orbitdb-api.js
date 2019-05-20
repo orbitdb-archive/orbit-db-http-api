@@ -7,6 +7,7 @@ class OrbitdbAPI {
     constructor (dbm, server_opts) {
         let comparisons, rawiterator, getraw, unpack_contents, listener
         let dbMiddleware, ErrorHandler, asyncMiddleware
+        this.debug = false;
 
         listener = Http2.createSecureServer(server_opts.http2_opts);
         this.server = new Hapi.Server({
@@ -40,6 +41,7 @@ class OrbitdbAPI {
 
         ErrorHandler = (err, _h) => {
             console.error(err);
+            if (this.debug) return Boom.boomify(err)
             return Boom.badImplementation();
 };
 
