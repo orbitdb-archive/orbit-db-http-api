@@ -24,7 +24,6 @@ class OrbitdbAPI {
             console.error(response)
             if (this.debug) {
                 response.output.payload.message = String(response)
-                return response
             }
             return response
         });
