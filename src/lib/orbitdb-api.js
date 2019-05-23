@@ -58,7 +58,7 @@ class OrbitdbAPI {
             {
                 method: 'GET',
                 path: '/dbs',
-                handler: (_request, h) => dbm.db_list()
+                handler: (_request, _h) => dbm.db_list()
             },
             {
                 method: ['POST', 'PUT'],
@@ -95,7 +95,7 @@ class OrbitdbAPI {
             {
                 method: 'DELETE',
                 path: '/db/{dbname}/{item}',
-                handler: async (db, request, _h) => {
+                handler: dbMiddleware (async (db, request, _h) => {
                     if (db.del) {
                         return {hash: await db.del(request.params.item)};
                     } else if (db.remove) {
@@ -107,7 +107,7 @@ class OrbitdbAPI {
                             dbtype: db.type
                         });
                     }
-                }
+                })
             },
             {
                 method: ['POST', 'PUT'],
