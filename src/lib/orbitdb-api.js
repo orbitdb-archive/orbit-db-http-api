@@ -13,7 +13,22 @@ class OrbitdbAPI {
         this.server = new Hapi.Server({
             listener,
             tls: true,
-            port: server_opts.api_port});
+            port: server_opts.api_port
+        });
+
+        this.server.ext('onPreResponse', (request, h) => {
+            let response = request.response;
+            if (!response.isBoom) {
+                return h.continue;
+            }
+            console.error(response)
+            if (this.debug) {
+                console.log('debug detected')
+                response.output.payload.message = String(response)
+                return response
+            }
+            return response
+        });
 
         comparisons = {
             'ne': (a, b) => a != b,
@@ -35,15 +50,6 @@ class OrbitdbAPI {
                     .catch((err) => ErrorHandler(err, h));
         };
 
-        asyncMiddleware = fn =>
-            (request, h) => Promise.resolve(fn(request, h))
-                .catch((err) => ErrorHandler(err, h));
-
-        ErrorHandler = (err, _h) => {
-            console.error(err);
-            if (this.debug) return Boom.boomify(err)
-            return Boom.badImplementation();
-        };
 
         rawiterator = (db, request, _h) =>
             db.iterator(request.payload).collect();
