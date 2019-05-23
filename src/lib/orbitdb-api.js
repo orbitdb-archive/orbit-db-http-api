@@ -23,7 +23,6 @@ class OrbitdbAPI {
             }
             console.error(response)
             if (this.debug) {
-                console.log('debug detected')
                 response.output.payload.message = String(response)
                 return response
             }
