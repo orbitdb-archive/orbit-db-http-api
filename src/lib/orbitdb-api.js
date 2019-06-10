@@ -1,12 +1,14 @@
 const Hapi  = require('hapi');
 const Boom  = require('boom');
 const Http2 = require('http2');
+const Susie = require('susie');
 
+require('events').EventEmitter.defaultMaxListeners = 50  //Set warning higher then normal to handle many clients
 
 class OrbitdbAPI {
     constructor (dbm, server_opts) {
         let comparisons, rawiterator, getraw, unpack_contents, listener;
-        let dbMiddleware;
+        let dbMiddleware, addEventListener;
         this.debug = false;
 
         listener = Http2.createSecureServer(server_opts.http2_opts);
@@ -68,6 +70,41 @@ class OrbitdbAPI {
             return contents
         };
 
+        addEventListener = (db, event_name, request, h) => {
+            let event_map = new Map(Object.entries({
+                'replicated': (address) =>
+                    h.event({event:'replicated', data: {address:address}}),
+                'replicate': (address) =>
+                    h.event({event:'replicate', data: {address:address}}),
+                'replicate.progress': (address, hash, entry, progress, have) =>
+                    h.event({event:'replicate.progress', data: {address:address, hash:hash, entry:entry, progress:progress, have:have}}),
+                'load': (dbname) =>
+                    h.event({event:'load', data: {dbname:dbname}}),
+                'load.progress': (address, hash, entry, progress, total) =>
+                    h.event({event:'load.progress', data: {address:address, hash:hash, entry:entry, progress:progress, total:total}}),
+                'ready': (dbname, heads) =>
+                    h.event({event:'ready', data: {dbname:dbname, heads:heads}}),
+                'write': (dbname, hash, entry) =>
+                        h.event({event:'write', data: {dbname:dbname, hash:hash, entry:entry}}),
+                'closed': (dbname) =>
+                        h.event({event:'closed', data: {dbname:dbname}})
+            }));
+
+            let event_callback = event_map.get(event_name)
+            if(event_callback){
+                db.events.on(event_name, event_callback)
+               let keepalive = setInterval(() => h.event({event:'keep-alive'}), 10000)
+                request.events.on('disconnect', () => {
+                    db.events.removeListener(event_name, event_callback)
+                    clearInterval(keepalive)
+                })
+            } else {
+                if(this.debug) throw Boom.badRequest(`Unrecognized event name: $(event_name)`)
+                throw Boom.badRequest('Unrecognized event name')
+            }
+        }
+
+        Promise.resolve(this.server.register(Susie)).catch((err) => {throw err});
         this.server.route([
             {
                 method: 'GET',
@@ -240,10 +277,20 @@ class OrbitdbAPI {
                 method: ['POST', 'PUT'],
                 path: '/db/{dbname}/access/write',
                 handler: dbMiddleware( async (db, request, _h) => {
-                    await db.access.grant('write', request.payload.publicKey)
+                    await db.access.grant('write', request.payload.id)
                     return {};
                 })
-            }
+            },
+            {
+                method: 'GET',
+                path: '/db/{dbname}/events/{eventname}',
+                handler: dbMiddleware( async (db, request, h) => {
+                    let events = request.params.eventname.split(',')
+                    events.forEach((event_name) => addEventListener(db,event_name, request, h));
+                    return h.event({event:'registered', data: {eventnames:events}})
+                })
+            },
+
         ]);
     }
 }

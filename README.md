@@ -1,6 +1,6 @@
 # OrbitDB HTTP API Server
 
-[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/orbitdb/Lobby)
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/orbitdb/orbit-db-http-api)
 [![npm version](https://badge.fury.io/js/orbit-db-http-api.svg)](https://www.npmjs.com/package/orbit-db-http-api)
 [![node](https://img.shields.io/node/v/orbit-db-http-api.svg)](https://www.npmjs.com/package/orbit-db-http-api)
 
@@ -26,6 +26,7 @@
   - [POST|PUT /db/:dbname/put](#post-put-dbdbnameput)
   - [POST|PUT /db/:dbname/inc](#post-put-dbdbnameinc)
   - [POST|PUT /db/:dbname/inc/:val](#post-put-dbdbnameincval)
+  - [POST|PUT /db/:dbname/access/write](#post-put-dbdbnameaccesswrite)
   - [DELETE /db/:dbname](#delete-dbdbname)
   - [DELETE /db/:dbname/:item](#delete-dbdbnameitem)
 - [Contribute](#contribute)
@@ -36,7 +37,7 @@
 To install the OrbitDB HTTP Client:
 
 ```shell
-git clone https://github.com/phillmac/orbit-db-api.git
+git clone https://github.com/orbitdb/orbit-db-http-api.git
 cd orbit-db-api
 npm install
 ```
@@ -394,6 +395,18 @@ Returns a multihash of the new counter value.
 
 ```shell
 curl -X POST http://localhost:3000/db/counter/inc/100
+```
+
+```json
+zdpuAmHw9Tcc4pyVjcVX3rJNJ7SGffmu4EwjodzmaPBVGGzbd
+```
+
+### POST|PUT /db/:dbname/access/write
+
+Adds the id to the list of peers who have write access to the :dbname data store.
+
+```shell
+curl -X POST http://localhost:3000/db/docstore/access/write -d 'id=045757bffcc7a4...'
 ```
 
 ```json
