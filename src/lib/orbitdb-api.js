@@ -73,7 +73,9 @@ class OrbitdbAPI {
                 'write': (dbname, hash, entry) =>
                         h.event({event:'write', data: {dbname:dbname, hash:hash, entry:entry}}),
                 'closed': (dbname) =>
-                        h.event({event:'closed', data: {dbname:dbname}})
+                        h.event({event:'closed', data: {dbname:dbname}}),
+                'peer.exchanged': (dbname, peer, address, heads) =>
+                        h.event({event:'peer.exchanged', data: {dbname:dbname, peer:peer, address:address, heads:heads}})
             }));
 
             let event_callback = event_map.get(event_name)
