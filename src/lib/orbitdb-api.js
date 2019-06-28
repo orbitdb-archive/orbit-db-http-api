@@ -177,18 +177,18 @@ class OrbitdbAPI {
                 method: ['POST', 'PUT'],
                 path: '/db/{dbname}/inc',
                 handler: dbMiddleware( async (db, request, _h) => {
-                    return {hash: await db.inc(parseInt(request.payload.val || 1))};
+                    return {hash: await db.inc()};
                 })
             },
             {
                 method: ['POST', 'PUT'],
                 path: '/db/{dbname}/inc/{val}',
                 handler: dbMiddleware( async (db, request, _h) => {
-                    return {hash: await db.inc(parseInt(request.params.val || 1))};
+                    return {hash: await db.inc(parseInt(request.params.val))};
                 })
             },
             {
-                method: 'POST',
+                method: 'GET',
                 path: '/db/{dbname}/query',
                 handler: dbMiddleware( async (db, request, _h) => {
                     let qparams, comparison, query;
