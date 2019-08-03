@@ -82,7 +82,7 @@ class DBManager {
                     path: db.options.path,
                     replicate: db.options.replicate,
                 },
-                canAppend: orbitdb.identity in __db_write,
+                canAppend: __db_write.includes(orbitdb.identity.id),
                 write: __db_write,
                 type: db.type,
                 uid: db.uid,
