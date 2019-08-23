@@ -1,3 +1,6 @@
+const Logger    = require('js-logger')
+
+
 class DBManager {
     constructor(orbitdb){
         let _dbs = {};
@@ -22,10 +25,10 @@ class DBManager {
             if (db) {
                 return db;
             } else {
-                console.log(`Opening db ${dbn}`);
+                Logger.info(`Opening db ${dbn}`);
                 db = await orbitdb.open(dbn, params);
                 await db.load();
-                console.log(`Loaded db ${db.dbname}`);
+                Logger.info(`Loaded db ${db.dbname}`);
                 _dbs[db.dbname] = db;
                 return db;
             }
@@ -36,7 +39,7 @@ class DBManager {
             if (db) {
                 await db.close()
                 delete _dbs[db.dbname];
-                console.log(`Unloaded db ${db.dbname}`);
+                Logger.info(`Unloaded db ${db.dbname}`);
             }
         }
 
