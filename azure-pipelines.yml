@@ -27,7 +27,9 @@ stages:
         repository: 'orbitdb/orbit-db-http-api'
         command: 'build'
         Dockerfile: '**/Dockerfile'
-        tags: '$(tag)'
+        tags: |
+          latest
+          $(tag)
     - task: Docker@2
       displayName: Push image
       inputs:
