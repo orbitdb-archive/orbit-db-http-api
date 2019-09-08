@@ -6,6 +6,6 @@ WORKDIR /api
 
 COPY . .
 
-RUN npm ci --only=prod
+RUN npm ci  --no-color --only=prod
 
 CMD ["node", "src/cli.js"]
