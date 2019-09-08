@@ -31,5 +31,8 @@ stages:
       displayName: Push image
       inputs:
         containerRegistry: 'OrbitDB Docker Hub'
+        repository: 'orbitdb/orbit-db-http-api'
         command: 'push'
-        tags: 'latest'
+        tags: |
+          latest
+           $(tag)
