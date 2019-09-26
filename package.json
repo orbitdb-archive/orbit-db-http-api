@@ -1,5 +1,6 @@
 {
   "name": "orbit-db-http-api",
+  "private" true,
   "version": "0.3.0-rc.4",
   "description": "An HTTP API Server for the OrbitDB distributed peer-to-peer database",
   "main": "src/cli.js",
