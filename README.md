@@ -227,7 +227,7 @@ The OrbitDB options ```create=true``` and ```type=eventlog|feed|docstore|keyvalu
 must be sent with the POST otherwise an error is thrown.
 
 ```shell
-curl https://localhost:3000/db/docstore -d "create=true" -d "type=docstore"
+curl -X POST https://localhost:3000/db/docstore -d "create=true" -d "type=docstore"
 ```
 
 ```json
