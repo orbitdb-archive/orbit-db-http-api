@@ -284,7 +284,7 @@ To query a subset of data, a condition can be specified. For example, to
 retrieve only those entries which have a total number of likes above 300:
 
 ```shell
-curl https://localhost:3000/db/docstore/query -X GET -H "Content-Type: application/json" --data '{"propname":"likes","comp":">","values":[300]}'
+curl https://localhost:3000/db/docstore/query -X GET -H "Content-Type: application/json" --data '{"propname":"likes","comp":"gt","values":[300]}'
 ```
 
 ```json
