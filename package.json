@@ -23,16 +23,17 @@
     "url": "https://github.com/orbitdb/orbit-db-http-api.git"
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=12.0.0"
   },
   "dependencies": {
+    "@hapi/boom": "^9.1.0",
     "docopt": "~0.6.2",
-    "hapi": ">17.0.0",
+    "hapi": "^18.1.0",
     "http2": "^3.2.0",
-    "ipfs": "^0.36.3",
-    "ipfs-http-client": "^30.0.0",
+    "ipfs": "^0.50.2",
+    "ipfs-http-client": "^47.0.0",
     "js-logger": "^1.6.0",
-    "orbit-db": "^0.21.1",
+    "orbit-db": "^0.25.0",
     "susie": "^3.0.0"
   }
 }
