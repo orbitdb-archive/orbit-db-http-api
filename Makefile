@@ -1,4 +1,5 @@
 root-cert:
+	mkdir -p certs
 	openssl genrsa -des3 -out certs/orbit-db-http-api.key 2048
 	openssl req -x509 \
 		-new -nodes \
@@ -6,7 +7,7 @@ root-cert:
 		-sha256 \
 		-days 1024 \
 		-out certs/orbit-db-http-api.pem
-	mkdir /usr/local/share/ca-certificates/extra
+	mkdir -p /usr/local/share/ca-certificates/extra
 	cp certs/orbit-db-http-api.pem /usr/local/share/ca-certificates/extra/orbit-db-http-api.crt
 	update-ca-certificates
 
