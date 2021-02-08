@@ -1,6 +1,7 @@
 const Hapi  = require('hapi');
 const Boom  = require('@hapi/boom');
 const Http2 = require('http2');
+const Http = require('http');
 const Susie = require('susie');
 
 require('events').EventEmitter.defaultMaxListeners = 50  //Set warning higher then normal to handle many clients
@@ -10,10 +11,10 @@ class OrbitdbAPI {
         let comparisons, rawiterator, getraw, unpack_contents, listener;
         let dbMiddleware, addEventListener;
 
-        listener = Http2.createSecureServer(server_opts.http2_opts);
+        listener = (server_opts.http1 ? Http : Http2)[server_opts.secure ? 'createSecureServer' : 'createServer'](server_opts.http2_opts);
         this.server = new Hapi.Server({
             listener,
-            tls: true,
+            tls: server_opts.secure,
             port: server_opts.api_port});
 
         comparisons = {
