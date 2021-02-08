@@ -14,7 +14,7 @@ on:
   pull_request:
 
 env:
-  IMAGE_NAME: muhammetaliakbay/orbit-db-http-api
+  IMAGE_NAME: orbit-db-http-api
 
 jobs:
   # Push image to GitHub Packages.
