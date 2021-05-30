@@ -1,6 +1,7 @@
 const Hapi  = require('hapi');
-const Boom  = require('boom');
+const Boom  = require('@hapi/boom');
 const Http2 = require('http2');
+const Http = require('http');
 const Susie = require('susie');
 
 require('events').EventEmitter.defaultMaxListeners = 50  //Set warning higher then normal to handle many clients
@@ -11,10 +12,11 @@ class OrbitdbAPI {
         let dbMiddleware, addEventListener;
         this.debug = false;
 
-        listener = Http2.createSecureServer(server_opts.http2_opts);
+        listener = (server_opts.http1 ? Http : Http2)[server_opts.secure ? 'createSecureServer' : 'createServer'](server_opts.http2_opts);
         this.server = new Hapi.Server({
             listener,
-            tls: true,
+
+            tls: server_opts.secure,
             port: server_opts.api_port
         });
 
@@ -279,8 +281,9 @@ class OrbitdbAPI {
                 method: ['POST', 'PUT'],
                 path: '/db/{dbname}/access/write',
                 handler: dbMiddleware( async (db, request, _h) => {
-                    await db.access.grant('write', request.payload.id)
-                    return {};
+                    if (await db.access.grant('write', request.payload.id) === false)
+                        return new Boom.notImplemented('Access controller does not support setting write access');
+                    return {}
                 })
             },
             {

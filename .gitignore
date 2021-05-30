@@ -63,6 +63,7 @@ typings/
 # ignore certificates
 *.crt
 *.key
+certs/
 
 # ignore local db repository
 orbitdb/
